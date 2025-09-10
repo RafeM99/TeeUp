@@ -30,7 +30,7 @@ struct ClubView: View {
                     isShowingSheet = true
                 }, label: {
                     Text("Edit")
-                        .padding(10)
+                        .padding([.top, .leading, .bottom], 10)
                 })
             }
         }
