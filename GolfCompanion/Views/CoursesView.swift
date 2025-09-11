@@ -31,6 +31,24 @@ struct CoursesView: View {
             .navigationTitle("Courses")
         }
     }
+    
+    // Calculates distance between two coordinates in km
+    func calculateDistance(courseLat: Double, courseLon: Double, userLat: Double, userLon: Double) -> Double {
+        let R = 6371.0 //Radius of Earth in km
+        
+        let dLat = (userLat - courseLat) * .pi / 180
+        let dLon = (userLon - courseLon) * .pi / 180
+        
+        let radCourseLat = courseLat * .pi / 180
+        let radUserLat = userLat * .pi / 180
+        
+        let a = sin(dLat / 2) * sin(dLat / 2) + cos(radCourseLat) * cos(radUserLat) * sin(dLon / 2) * sin(dLon / 2)
+        
+        let c = 2 * atan2(sqrt(a), sqrt(1-a))
+        
+        let distance = R * c
+        return distance
+    }
 }
 
 #Preview {
