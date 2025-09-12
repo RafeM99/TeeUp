@@ -19,5 +19,15 @@ struct LocationTests {
         //assert
         #expect(result == expectedDistance)
     }
+    
+//    @Test("Testing nearest courses", arguments: [(courseList: Course.courseExamples, userCoordinates: (37.3346, -122.0090), expectedResult: ["Pebble Beach", "Lakeside Course", "Augusta National"])])
+//    func nearestCourseCalculationWithThreeCourses(courseList: [Course], userCoordinates: (Double, Double), expectedResult: [String]) throws {
+//        // arrange
+//        let coursesView = CoursesView()
+//        //act
+//        let result = coursesView.findNearestCourses(courseList: courseList, userCoordinates: userCoordinates)
+//        //assert
+//        #expect(result == expectedResult)
+//    }
 
 }
