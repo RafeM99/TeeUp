@@ -1,0 +1,36 @@
+{
+  "configurations" : [
+    {
+      "id" : "7B4062B1-4FF3-44F7-B150-5DB7C6CE5439",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:GolfCompanion.xcodeproj",
+      "identifier" : "076F5B5A2E1BE9AB003839A0",
+      "name" : "GolfCompanion"
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:GolfCompanion.xcodeproj",
+        "identifier" : "076F5B712E1BE9AD003839A0",
+        "name" : "GolfCompanionUITests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:GolfCompanion.xcodeproj",
+        "identifier" : "076F5B672E1BE9AD003839A0",
+        "name" : "GolfCompanionTests"
+      }
+    }
+  ],
+  "version" : 1
+}
