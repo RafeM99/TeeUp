@@ -12,21 +12,35 @@ struct CoursesView: View {
     
     var body: some View {
         NavigationStack {
-            List($courses) { $course in
-                NavigationLink(destination: {
-                    CourseDetailView(course: course)
-                }, label: {
-                    HStack {
-                        Image(systemName: course.isFavourite ? "star.fill" : "star")
-                            .onTapGesture {
-                                course.isFavourite.toggle()
+            Form {
+                Section(content: {
+                    List($courses) { $course in
+                        NavigationLink(destination: {
+                            CourseDetailView(course: course)
+                        }, label: {
+                            HStack {
+                                Image(systemName: course.isFavourite ? "star.fill" : "star")
+                                    .onTapGesture {
+                                        course.isFavourite.toggle()
+                                    }
+                                    .foregroundColor(.blue)
+                                    .symbolEffect(.bounce, value: course.isFavourite)
+                                
+                                Text("\(course.courseName)")
                             }
-                            .foregroundColor(.blue)
-                            .symbolEffect(.bounce, value: course.isFavourite)
-                        
-                        Text("\(course.courseName)")
+                        })
                     }
+                    
+                }, header: {
+                    
                 })
+                
+                Section(content: {
+                    
+                }, header: {
+                    Text("other courses near you")
+                })
+                
             }
             .navigationTitle("Courses")
         }
@@ -48,6 +62,28 @@ struct CoursesView: View {
         
         let distance = R * c
         return distance
+    }
+    
+    func findNearestCourses(courseList: [Course], userCoordinates: (Double, Double)) -> [String] {
+        var distances: [(String, Double)] = []
+        
+        for course in courseList {
+            let courseLat = course.location.latitude
+            let courseLon = course.location.longitude
+            
+            let distance = calculateDistance(courseLat: courseLat, courseLon: courseLon, userLat: userCoordinates.0, userLon: userCoordinates.1)
+            distances.append((course.courseName, distance))
+        }
+        
+        distances.sort{$0.1 < $1.1}
+        
+        var nearestCourses: [String] = []
+        
+        for i in 0...4 {
+            nearestCourses.append(distances[i].0)
+        }
+        
+        return nearestCourses
     }
 }
 

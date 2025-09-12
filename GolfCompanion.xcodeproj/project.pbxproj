@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		3D4256802E7460D300C7BC0C /* GolfCompanion.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = 3D42567F2E7460D300C7BC0C /* GolfCompanion.xctestplan */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		076F5B692E1BE9AD003839A0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +31,7 @@
 		076F5B5B2E1BE9AB003839A0 /* GolfCompanion.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GolfCompanion.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		076F5B682E1BE9AD003839A0 /* GolfCompanionTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GolfCompanionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		076F5B722E1BE9AD003839A0 /* GolfCompanionUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GolfCompanionUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D42567F2E7460D300C7BC0C /* GolfCompanion.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = GolfCompanion.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -75,6 +80,7 @@
 		076F5B522E1BE9AB003839A0 = {
 			isa = PBXGroup;
 			children = (
+				3D42567F2E7460D300C7BC0C /* GolfCompanion.xctestplan */,
 				076F5B5D2E1BE9AB003839A0 /* GolfCompanion */,
 				076F5B6B2E1BE9AD003839A0 /* GolfCompanionTests */,
 				076F5B752E1BE9AD003839A0 /* GolfCompanionUITests */,
@@ -212,6 +218,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3D4256802E7460D300C7BC0C /* GolfCompanion.xctestplan in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -414,7 +421,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = app.GolfCompanion;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -443,7 +450,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = app.GolfCompanion;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
