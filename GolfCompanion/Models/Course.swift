@@ -8,7 +8,7 @@
 import Foundation
 
 @Observable
-class Course: Identifiable {
+class Course: Identifiable, @unchecked Sendable {
     let id = UUID()
     let clubName: String
     let courseName: String
@@ -177,6 +177,78 @@ class Course: Identifiable {
                                 Hole(par: 4, yardage: 393), Hole(par: 5, yardage: 572), Hole(par: 4, yardage: 396), Hole(par: 4, yardage: 403),
                                 Hole(par: 3, yardage: 177), Hole(par: 5, yardage: 543)
                             ]
+                        )
+                    ]
+                )
+            ),
+            Course(
+                clubName: "St Andrews Links",
+                courseName: "Old Course",
+                location: Location(
+                    address: "St Andrews, Fife",
+                    city: "St Andrews",
+                    state: "Scotland",
+                    country: "UK",
+                    latitude: 56.3439,
+                    longitude: -2.8036
+                ),
+                tees: TeeTypes(
+                    female: [
+                        Tee(
+                            teeName: "Forward Tees",
+                            totalYards: 6000,
+                            parTotal: 72,
+                            holes: Array(repeating: Hole(par: 4, yardage: 350), count: 18)
+                        )
+                    ],
+                    male: [
+                        Tee(
+                            teeName: "Championship Tees",
+                            totalYards: 7100,
+                            parTotal: 72,
+                            holes: Array(repeating: Hole(par: 4, yardage: 400), count: 18)
+                        ),
+                        Tee(
+                            teeName: "Member Tees",
+                            totalYards: 6800,
+                            parTotal: 72,
+                            holes: Array(repeating: Hole(par: 4, yardage: 380), count: 18)
+                        )
+                    ]
+                )
+            ),
+            Course(
+                clubName: "Royal Melbourne Golf Club",
+                courseName: "West Course",
+                location: Location(
+                    address: "Royal Melbourne Golf Club",
+                    city: "Melbourne",
+                    state: "Victoria",
+                    country: "Australia",
+                    latitude: -37.8597,
+                    longitude: 145.0363
+                ),
+                tees: TeeTypes(
+                    female: [
+                        Tee(
+                            teeName: "Forward Tees",
+                            totalYards: 5800,
+                            parTotal: 72,
+                            holes: Array(repeating: Hole(par: 4, yardage: 340), count: 18)
+                        )
+                    ],
+                    male: [
+                        Tee(
+                            teeName: "Championship Tees",
+                            totalYards: 7200,
+                            parTotal: 72,
+                            holes: Array(repeating: Hole(par: 4, yardage: 400), count: 18)
+                        ),
+                        Tee(
+                            teeName: "Member Tees",
+                            totalYards: 6900,
+                            parTotal: 72,
+                            holes: Array(repeating: Hole(par: 4, yardage: 380), count: 18)
                         )
                     ]
                 )

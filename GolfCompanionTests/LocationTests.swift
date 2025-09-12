@@ -9,23 +9,25 @@ import Testing
 @testable import GolfCompanion
 
 struct LocationTests {
-
-    @Test("Testing distance calculator", arguments: [(courseLat: 33.5028, courseLon: -82.0223, userLat: 37.3346, userLon: -122.0090, expectedDistance: "3621.44"), (courseLat: 39.7997, courseLon: -89.6558, userLat: 37.3346, userLon: -122.0090, expectedDistance: "2810.79"), (courseLat: 36.5684, courseLon: -121.9507, userLat: 37.3346, userLon: -122.0090, expectedDistance: "85.35")])
-    func distanceCalculationWithVariousCoordinates(courseLat: Double, courseLon: Double, userLat: Double, userLon: Double, expectedDistance: String) throws {
-        // arrange
-        let coursesView = CoursesView()
-        //act
-        let result = String(format: "%.2f", coursesView.calculateDistance(courseLat: courseLat, courseLon: courseLon, userLat: userLat, userLon: userLon))
-        //assert
+    @Test("Distance calculation", arguments: [
+            (33.5028, -82.0223, 37.3346, -122.0090, "3621.44"),
+            (39.7997, -89.6558, 37.3346, -122.0090, "2810.79"),
+            (36.5684, -121.9507, 37.3346, -122.0090, "85.35"),
+            (56.3439, -2.8036, 37.3346, -122.0090, "8134.37"),
+            (-37.8597, 145.0363, 37.3346, -122.0090, "12661.09")
+        ])
+    func distanceCalculationWithVariousCoordinates(courseLat: Double, courseLon: Double,userLat: Double, userLon: Double, expectedDistance: String) async {
+        let coursesView = await CoursesView()
+        let result = await String(format: "%.2f",coursesView.calculateDistance(courseLat: courseLat,courseLon: courseLon,userLat: userLat,userLon: userLon))
         #expect(result == expectedDistance)
     }
     
-//    @Test("Testing nearest courses", arguments: [(courseList: Course.courseExamples, userCoordinates: (37.3346, -122.0090), expectedResult: ["Pebble Beach", "Lakeside Course", "Augusta National"])])
-//    func nearestCourseCalculationWithThreeCourses(courseList: [Course], userCoordinates: (Double, Double), expectedResult: [String]) throws {
+//    @Test("Testing nearest courses", arguments: [(courseList: Course.courseExamples, userCoordinates: (37.3346, -122.0090), expectedResult: ["Pebble Beach", "Lakeside Course", "Augusta National", "Old Course", "West Course"])])
+//    func nearestCourseCalculationWithFiveCourses(courseList: [Course], userCoordinates: (Double, Double), expectedResult: [String]) async {
 //        // arrange
-//        let coursesView = CoursesView()
+//        let coursesView = await CoursesView()
 //        //act
-//        let result = coursesView.findNearestCourses(courseList: courseList, userCoordinates: userCoordinates)
+//        let result = await coursesView.findNearestCourses(courseList: courseList, userCoordinates: userCoordinates)
 //        //assert
 //        #expect(result == expectedResult)
 //    }

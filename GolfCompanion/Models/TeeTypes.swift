@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct TeeTypes {
+struct TeeTypes: Sendable {
     let female: [Tee]
     let male: [Tee]
 }

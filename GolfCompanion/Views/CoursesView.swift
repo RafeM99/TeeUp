@@ -9,6 +9,8 @@ import SwiftUI
 
 struct CoursesView: View {
     @State var courses = Course.courseExamples
+    let locationDataManager: LocationDataManager = LocationDataManager()
+    @State private var nearestCourses: [CourseDistance] = []
     
     var body: some View {
         NavigationStack {
@@ -36,13 +38,25 @@ struct CoursesView: View {
                 })
                 
                 Section(content: {
-                    
+                    ForEach(nearestCourses, id: \.id) {course in
+                        HStack {
+                            Text("\(course.course.courseName)")
+                            
+                            Spacer()
+                            
+                            Text("\(course.distance)" , specifier: "%.1f")
+                        }
+                        
+                    }
                 }, header: {
-                    Text("other courses near you")
+                    Text("Other courses near you")
                 })
                 
             }
             .navigationTitle("Courses")
+            .onAppear(perform: {
+                nearestCourses = findNearestCourses(courseList: Course.courseExamples, userCoordinates: locationDataManager.coordinates)
+            })
         }
     }
     
@@ -64,23 +78,23 @@ struct CoursesView: View {
         return distance
     }
     
-    func findNearestCourses(courseList: [Course], userCoordinates: (Double, Double)) -> [String] {
-        var distances: [(String, Double)] = []
+    func findNearestCourses(courseList: [Course], userCoordinates: (Double, Double)) -> [CourseDistance] {
+        var distances: [(Course, Double)] = []
         
         for course in courseList {
             let courseLat = course.location.latitude
             let courseLon = course.location.longitude
             
             let distance = calculateDistance(courseLat: courseLat, courseLon: courseLon, userLat: userCoordinates.0, userLon: userCoordinates.1)
-            distances.append((course.courseName, distance))
+            distances.append((course, distance))
         }
         
         distances.sort{$0.1 < $1.1}
         
-        var nearestCourses: [String] = []
+        var nearestCourses: [CourseDistance] = []
         
         for i in 0...4 {
-            nearestCourses.append(distances[i].0)
+            nearestCourses.append(CourseDistance(course: distances[i].0, distance: distances[i].1))
         }
         
         return nearestCourses

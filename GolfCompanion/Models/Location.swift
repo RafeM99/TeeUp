@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Location {
+struct Location: Sendable {
     let address: String
     let city: String
     let state: String
