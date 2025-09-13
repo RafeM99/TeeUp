@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct ContentView: View {
+    private let locationDataManager = LocationDataManager()
+    
     var body: some View {
         TabView{
             BagView()
@@ -23,6 +25,9 @@ struct ContentView: View {
                     Label("Play", systemImage: "figure.golf")
                 }
         }
+        .onAppear(perform: {
+            locationDataManager.requestAuthorisation()
+        })
     }
 }
 

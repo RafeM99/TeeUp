@@ -10,7 +10,7 @@ import CoreLocation
 
 class LocationDataManager: NSObject, CLLocationManagerDelegate {
     var manager = CLLocationManager()
-    var coordinates: (Double, Double) = (0.0, 0.0)
+    private var callback: ((_ coordinates: (Double, Double)) -> Void)?
     
     override init() {
         super.init()
@@ -21,14 +21,18 @@ class LocationDataManager: NSObject, CLLocationManagerDelegate {
         manager.requestWhenInUseAuthorization()
     }
     
-    func updateLocation() {
+//    requests the location asynchronously and asigns the result to callback
+    func requestLocation(completion: @escaping (_ coordinates: (Double, Double)) -> Void) {
+        callback = completion
         manager.requestLocation()
     }
     
-//    Gets coordinates after location updates and puts them into a tuple
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let lastLocation = locations.last {
-            coordinates = (Double(lastLocation.coordinate.latitude), Double(lastLocation.coordinate.longitude))
-        }
+        callback?((locations.first?.coordinate.latitude ?? -1.0, locations.first?.coordinate.longitude ?? -1.0))
+    }
+    
+//    placeholder in case of error finding location
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
+        callback?((0.0, 0.0))
     }
 }
