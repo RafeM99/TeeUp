@@ -44,7 +44,7 @@ struct CoursesView: View {
                             
                             Spacer()
                             
-                            Text("\(course.distance)" , specifier: "%.1f")
+                            Text("\(course.distance, specifier: "%.1f") km away")
                         }
                         
                     }
@@ -55,6 +55,7 @@ struct CoursesView: View {
             }
             .navigationTitle("Courses")
             .onAppear(perform: {
+                locationDataManager.updateLocation()
                 nearestCourses = findNearestCourses(courseList: Course.courseExamples, userCoordinates: locationDataManager.coordinates)
             })
         }
