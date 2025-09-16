@@ -19,7 +19,6 @@ class CoursesViewModel {
         locationDataManager.requestLocation(completion: { coordinate in
             self.coordinates = coordinate
             self.nearestCourses = self.findNearestCourses(courseList: Course.courseExamples, userCoordinates: self.coordinates)
-            print("\(self.coordinates)")
         })
     }
     

@@ -22,6 +22,7 @@ struct CoursesView: View {
                                 Image(systemName: course.isFavourite ? "star.fill" : "star")
                                     .onTapGesture {
                                         course.isFavourite.toggle()
+                                        vm.courses.sort {$0.isFavourite && !$1.isFavourite}
                                     }
                                     .foregroundColor(.blue)
                                     .symbolEffect(.bounce, value: course.isFavourite)
@@ -37,14 +38,20 @@ struct CoursesView: View {
                 
                 Section(content: {
                     ForEach(vm.nearestCourses, id: \.id) {course in
-                        HStack {
-                            Text("\(course.course.courseName)")
-                            
-                            Spacer()
-                            
-                            Text("\(course.distance, specifier: "%.1f")km away")
-                        }
-                        
+                        NavigationLink(destination: {
+                            CourseDetailView(course: course.course)
+                        }, label: {
+                            HStack {
+                                Text("\(course.course.courseName)")
+                                
+                                Spacer()
+                                
+                                Text("\(course.distance, specifier: "%.1f")km away")
+                                    .font(.caption2)
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(.gray)
+                            }
+                        })
                     }
                 }, header: {
                     Text("Other courses near you")
@@ -54,6 +61,7 @@ struct CoursesView: View {
             .navigationTitle("Courses")
             .onAppear(perform: {
                 vm.updateLocation()
+                vm.courses.sort {$0.isFavourite && !$1.isFavourite}
             })
         }
     }

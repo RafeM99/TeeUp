@@ -23,7 +23,7 @@ struct CourseDetailView: View {
                     Text("\(course.location.state)")
                     Text("\(course.location.country)")
                 }, header: {
-                    Text("Location")
+                    Text("Address")
                 })
                 
                 Section(content: {
@@ -37,7 +37,7 @@ struct CourseDetailView: View {
                                     .fontWeight(.semibold)
                                 Text("Total yards: \(tee.totalYards)")
                                 Text("Par: \(tee.parTotal)")
-                            }
+                            } 
                         })
                     }
                 }, header: {
@@ -69,7 +69,8 @@ struct CourseDetailView: View {
                         course.isFavourite.toggle()
                     }, label: {
                         Image(systemName: course.isFavourite ? "star.fill" : "star")
-                            .padding()
+                            .padding(.trailing, 5)
+                            .padding(.top, 20)
                     })
                     .symbolEffect(.bounce, value: course.isFavourite)
                 }

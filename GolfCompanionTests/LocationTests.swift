@@ -258,7 +258,7 @@ struct LocationTests {
         let result = coursesViewModel.findNearestCourses(courseList: courseList, userCoordinates: userCoordinates)
         //assert
         #expect(result.map {$0.course.courseName} == expectedResult.map {$0.course.courseName})
-        #expect(result.map {$0.distance} == expectedResult.map {$0.distance})
+        #expect(result.map {String(format: "%.2f",$0.distance)} == expectedResult.map {String($0.distance)})
     }
 
 }
