@@ -13,7 +13,7 @@ class Course: Identifiable, @unchecked Sendable {
     let clubName: String
     let courseName: String
     let location: Location
-    let tees: TeeTypes
+    var tees: TeeTypes
     var isFavourite: Bool = false
     
     init(clubName: String, courseName: String, location: Location, tees: TeeTypes) {

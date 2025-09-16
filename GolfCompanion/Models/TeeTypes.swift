@@ -8,6 +8,7 @@
 import Foundation
 
 struct TeeTypes: Sendable {
+    let id = UUID()
     let female: [Tee]
     let male: [Tee]
 }
