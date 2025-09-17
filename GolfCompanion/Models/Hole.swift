@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Hole: Identifiable, Sendable {
+struct Hole: Identifiable, Hashable, Sendable {
     let id = UUID()
     let par: Int
     let yardage: Int

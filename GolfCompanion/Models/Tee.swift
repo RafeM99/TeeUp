@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Tee: Identifiable, Sendable {
+struct Tee: Identifiable, Hashable, Sendable {
     let id = UUID()
     let teeName: String
     let totalYards: Int
