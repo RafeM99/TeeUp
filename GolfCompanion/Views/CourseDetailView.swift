@@ -69,8 +69,6 @@ struct CourseDetailView: View {
                         course.isFavourite.toggle()
                     }, label: {
                         Image(systemName: course.isFavourite ? "star.fill" : "star")
-                            .padding(.trailing, 5)
-                            .padding(.top, 20)
                     })
                     .symbolEffect(.bounce, value: course.isFavourite)
                 }
