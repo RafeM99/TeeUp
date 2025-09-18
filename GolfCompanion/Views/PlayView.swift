@@ -9,12 +9,13 @@ import SwiftUI
 
 struct PlayView: View {
     @State private var displayedCourse: Course = Course.courseExamples.first!
-    @State private var scores: [(String, String, Int)] = []
+    @State private var scores: [(String, String, Int)] = [("Augusta National", "Masters Tees", 92), ("Augusta National", "Member Tees", 72)]
     @State private var tee: Tee = Course.courseExamples.first!.tees.male.first!
     @State private var isShowingSheet: Bool = false
+    @State private var startRound = false
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             Form {
                 Section(content: {
                     NavigationLink(destination: {
@@ -23,7 +24,11 @@ struct PlayView: View {
                         Text("Course details")
                     })
                     
-                    Text("Best score: \(scores.min(by: {$0.2 > $1.2})?.2)")
+                    if let best = findLowestScore(scores: scores) {
+                        Text("Best score: \(best.2) - \(best.1)")
+                    } else {
+                        Text("Best score: N/A")
+                    }
                     
                     Button("Add a previous score") {
                         isShowingSheet = true
@@ -58,14 +63,19 @@ struct PlayView: View {
                     HStack {
                         Spacer()
                         
-                        NavigationLink(destination: {
-                            RoundView()
-                        }, label: {
+                        Button {
+                            startRound = true
+                        } label: {
                             Text("Start Round")
-                        })
-                        .frame(minWidth: 150, minHeight: 60)
-                        .background(Color.white)
-                        .cornerRadius(20)
+                                .font(.title)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(.black)
+                                .frame(minWidth: 200, minHeight: 70)
+                                .background(Color.white)
+                                .cornerRadius(25)
+                        }
+                        .buttonStyle(.plain)
+                        .listRowInsets(EdgeInsets())
                         
                         Spacer()
                     }
@@ -78,7 +88,15 @@ struct PlayView: View {
             }, content: {
                 AddScoreView(scores: $scores, course: $displayedCourse, isShowing: $isShowingSheet)
             })
+            .navigationDestination(isPresented: $startRound) {
+                RoundView(course: $displayedCourse)
+            }
         }
+    }
+    
+    func findLowestScore(scores: [(String, String, Int)]) -> (String, String, Int)? {
+        let best = scores.min(by: { $0.2 < $1.2 })
+        return best
     }
 }
 
