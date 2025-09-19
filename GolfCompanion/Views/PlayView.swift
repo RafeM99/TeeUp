@@ -89,7 +89,7 @@ struct PlayView: View {
                 AddScoreView(scores: $scores, course: $displayedCourse, isShowing: $isShowingSheet)
             })
             .navigationDestination(isPresented: $startRound) {
-                RoundView(course: $displayedCourse)
+                RoundView(course: $displayedCourse, tee: $tee)
             }
         }
     }
