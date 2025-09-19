@@ -21,7 +21,7 @@ struct RoundView: View {
             }
         }
         .toolbar {
-            ToolbarItem(placement: .title, content: {
+            ToolbarItem(placement: .principal, content: {
                 Text("Hole \(holeNumber)")
                     .font(.largeTitle)
                     .fontWeight(.bold)

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct PlayView: View {
     @State private var displayedCourse: Course = Course.courseExamples.first!
-    @State private var scores: [(String, String, Int)] = [("Augusta National", "Masters Tees", 92), ("Augusta National", "Member Tees", 72)]
+    @State private var scores: [(String, String, Int)] = []
     @State private var tee: Tee = Course.courseExamples.first!.tees.male.first!
     @State private var isShowingSheet: Bool = false
     @State private var startRound = false
