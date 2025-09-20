@@ -15,6 +15,7 @@ struct AddClubView: View {
     @State var newBrand: String = ""
     @State var newIsLeft: Bool = false
     @State var newDistance: Double = 150
+    @State var showingAlert: Bool = false
     
     var body: some View {
         List {
@@ -46,10 +47,14 @@ struct AddClubView: View {
                 Spacer()
                 
                 Button(action: {
-                    let newClub = Club(type: newType, brand: newBrand, isLeftHanded: newIsLeft, distance: newDistance)
-                    clubs.append(newClub)
-                    clubs.sort(by: {$0.distance > $1.distance})
-                    isShowing = false
+                    if newBrand == "" {
+                        showingAlert = true
+                    } else {
+                        let newClub = Club(type: newType, brand: newBrand, isLeftHanded: newIsLeft, distance: newDistance)
+                        clubs.append(newClub)
+                        clubs.sort(by: {$0.distance > $1.distance})
+                        isShowing = false
+                    }
                 }, label: {
                     Text("Add Club")
                         .font(.title2)
@@ -60,6 +65,9 @@ struct AddClubView: View {
             .padding(8)
         }
         .presentationDetents([.fraction(0.5)])
+        .alert("No brand entered", isPresented: $showingAlert) {
+            Button("OK", role: .cancel) {}
+        }
     }
 }
 

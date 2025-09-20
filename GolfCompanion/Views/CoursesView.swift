@@ -21,8 +21,10 @@ struct CoursesView: View {
                             HStack {
                                 Image(systemName: course.isFavourite ? "star.fill" : "star")
                                     .onTapGesture {
-                                        course.isFavourite.toggle()
-                                        vm.courses.sort {$0.isFavourite && !$1.isFavourite}
+                                        withAnimation {
+                                            course.isFavourite.toggle()
+                                            vm.courses.sort {$0.isFavourite && !$1.isFavourite}
+                                        }
                                     }
                                     .foregroundColor(.blue)
                                     .symbolEffect(.bounce, value: course.isFavourite)
@@ -31,7 +33,6 @@ struct CoursesView: View {
                             }
                         })
                     }
-                    
                 }, header: {
                     
                 })
