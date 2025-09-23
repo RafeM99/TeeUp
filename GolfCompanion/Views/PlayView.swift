@@ -10,9 +10,10 @@ import SwiftUI
 struct PlayView: View {
     @State private var displayedCourse: Course = Course.courseExamples.first!
     @State private var scores: [(String, String, Int)] = []
-    @State private var tee: Tee = Course.courseExamples.first!.tees.male.first!
     @State private var isShowingSheet: Bool = false
     @State private var startRound = false
+    @State private var tee: Tee? = nil
+    @State var showingAlert: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -64,7 +65,11 @@ struct PlayView: View {
                         Spacer()
                         
                         Button {
-                            startRound = true
+                            if tee == nil {
+                                showingAlert = true
+                            } else {
+                                startRound = true
+                            }
                         } label: {
                             Text("Start Round")
                                 .font(.title)
@@ -89,7 +94,12 @@ struct PlayView: View {
                 AddScoreView(scores: $scores, course: $displayedCourse, isShowing: $isShowingSheet)
             })
             .navigationDestination(isPresented: $startRound) {
-                RoundView(course: $displayedCourse, tee: $tee)
+                if let tee {
+                    RoundView(course: $displayedCourse, tee: Binding(get: { tee }, set: { self.tee = $0 }))
+                }
+            }
+            .alert("No tee selected", isPresented: $showingAlert) {
+                Button("OK", role: .cancel) {}
             }
         }
     }

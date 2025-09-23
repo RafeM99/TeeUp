@@ -16,8 +16,8 @@ struct RoundView: View {
     var body: some View {
         Form {
             Section {
-                Text("Distance: ")
-                Text("Par: ")
+                Text("Distance: \(tee.holes[holeNumber - 1].yardage)")
+                Text("Par: \(tee.holes[holeNumber - 1].par)")
             }
         }
         .toolbar {
