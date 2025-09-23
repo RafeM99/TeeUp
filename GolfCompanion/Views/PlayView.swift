@@ -95,7 +95,7 @@ struct PlayView: View {
             })
             .navigationDestination(isPresented: $startRound) {
                 if let tee {
-                    RoundView(course: $displayedCourse, tee: Binding(get: { tee }, set: { self.tee = $0 }))
+                    RoundView(course: $displayedCourse, tee: Binding(get: { tee }, set: { self.tee = $0 }), courseScores: $scores)
                 }
             }
             .alert("No tee selected", isPresented: $showingAlert) {
