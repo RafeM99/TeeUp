@@ -19,6 +19,7 @@ struct RoundView: View {
     @State private var showingAlert: Bool = false
     @State private var pendingScore: Int?
     @State private var totalScore: Int = 0
+    @State private var showScorecard: Bool = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -166,11 +167,19 @@ struct RoundView: View {
                 Button {
                     dismiss()
                 } label: {
-                    HStack(spacing: 5) {
+                    HStack(spacing: 4) {
                         Image(systemName: "chevron.left")
-                        Text("Cancel round")
+                        Text("Cancel")
                     }
                 }
+            }
+            
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(action: {
+                    showScorecard = true
+                }, label: {
+                    Image(systemName: "list.dash")
+                })
             }
         }
         .alert("Add score of \(pendingScore ?? 0)", isPresented: $showingAlert, presenting: pendingScore) { score in
@@ -195,6 +204,9 @@ struct RoundView: View {
             }
         } message: { score in
             Text("Record \(score) for hole \(holeNumber)?")
+        }
+        .navigationDestination(isPresented: $showScorecard) {
+            Scorecard_View(tee: $tee, scores: $roundScores)
         }
     }
 }
