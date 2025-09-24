@@ -44,6 +44,7 @@ struct RoundView: View {
                         Image(systemName: "1.circle")
                             .resizable()
                             .frame(width: 75, height: 75)
+                            .foregroundStyle(.black)
                     })
                     
                     Spacer()
@@ -55,6 +56,7 @@ struct RoundView: View {
                         Image(systemName: "2.circle")
                             .resizable()
                             .frame(width: 75, height: 75)
+                            .foregroundStyle(.black)
                     })
                     
                     Spacer()
@@ -66,6 +68,7 @@ struct RoundView: View {
                         Image(systemName: "3.circle")
                             .resizable()
                             .frame(width: 75, height: 75)
+                            .foregroundStyle(.black)
                     })
                 }
                 
@@ -79,6 +82,7 @@ struct RoundView: View {
                         Image(systemName: "4.circle")
                             .resizable()
                             .frame(width: 75, height: 75)
+                            .foregroundStyle(.black)
                     })
                     
                     Spacer()
@@ -90,6 +94,7 @@ struct RoundView: View {
                         Image(systemName: "5.circle")
                             .resizable()
                             .frame(width: 75, height: 75)
+                            .foregroundStyle(.black)
                     })
                     
                     Spacer()
@@ -101,6 +106,7 @@ struct RoundView: View {
                         Image(systemName: "6.circle")
                             .resizable()
                             .frame(width: 75, height: 75)
+                            .foregroundStyle(.black)
                     })
                 }
                 
@@ -114,6 +120,7 @@ struct RoundView: View {
                         Image(systemName: "7.circle")
                             .resizable()
                             .frame(width: 75, height: 75)
+                            .foregroundStyle(.black)
                     })
                     
                     Spacer()
@@ -125,6 +132,7 @@ struct RoundView: View {
                         Image(systemName: "8.circle")
                             .resizable()
                             .frame(width: 75, height: 75)
+                            .foregroundStyle(.black)
                     })
                     
                     Spacer()
@@ -136,6 +144,7 @@ struct RoundView: View {
                         Image(systemName: "9.circle")
                             .resizable()
                             .frame(width: 75, height: 75)
+                            .foregroundStyle(.black)
                     })
                 }
             }
@@ -145,12 +154,24 @@ struct RoundView: View {
             .background(Color(UIColor.systemGroupedBackground))
             
         }
+        .navigationBarBackButtonHidden()
         .toolbar {
             ToolbarItem(placement: .principal, content: {
                 Text("Hole \(holeNumber)")
                     .font(.largeTitle)
                     .fontWeight(.bold)
             })
+            
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    dismiss()
+                } label: {
+                    HStack(spacing: 5) {
+                        Image(systemName: "chevron.left")
+                        Text("Cancel round")
+                    }
+                }
+            }
         }
         .alert("Add score of \(pendingScore ?? 0)", isPresented: $showingAlert, presenting: pendingScore) { score in
             Button("Add") {

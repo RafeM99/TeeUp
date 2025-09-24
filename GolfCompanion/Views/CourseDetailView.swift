@@ -96,11 +96,11 @@ struct CourseDetailView: View {
                     totalYards: 6365,
                     parTotal: 72,
                     holes: [
-                        Hole(par: 4, yardage: 365), Hole(par: 5, yardage: 515), Hole(par: 4, yardage: 340), Hole(par: 3, yardage: 170),
-                        Hole(par: 4, yardage: 400), Hole(par: 3, yardage: 165), Hole(par: 4, yardage: 330), Hole(par: 5, yardage: 480),
-                        Hole(par: 4, yardage: 395), Hole(par: 4, yardage: 480), Hole(par: 4, yardage: 400), Hole(par: 3, yardage: 145),
-                        Hole(par: 5, yardage: 455), Hole(par: 4, yardage: 380), Hole(par: 5, yardage: 475), Hole(par: 3, yardage: 145),
-                        Hole(par: 4, yardage: 370), Hole(par: 4, yardage: 385)
+                        Hole(number: 1, par: 4, yardage: 365), Hole(number: 2, par: 5, yardage: 515), Hole(number: 3, par: 4, yardage: 340), Hole(number: 4, par: 3, yardage: 170),
+                        Hole(number: 5, par: 4, yardage: 400), Hole(number: 6, par: 3, yardage: 165), Hole(number: 7, par: 4, yardage: 330), Hole(number: 8, par: 5, yardage: 480),
+                        Hole(number: 9, par: 4, yardage: 395), Hole(number: 10, par: 4, yardage: 480), Hole(number: 11, par: 4, yardage: 400), Hole(number: 12, par: 3, yardage: 145),
+                        Hole(number: 13, par: 5, yardage: 455), Hole(number: 14, par: 4, yardage: 380), Hole(number: 15, par: 5, yardage: 475), Hole(number: 16, par: 3, yardage: 145),
+                        Hole(number: 17, par: 4, yardage: 370), Hole(number: 18, par: 4, yardage: 385)
                     ]
                 )
             ],
@@ -110,11 +110,11 @@ struct CourseDetailView: View {
                     totalYards: 7445,
                     parTotal: 72,
                     holes: [
-                        Hole(par: 4, yardage: 445), Hole(par: 5, yardage: 575), Hole(par: 4, yardage: 350), Hole(par: 3, yardage: 240),
-                        Hole(par: 4, yardage: 455), Hole(par: 3, yardage: 180), Hole(par: 4, yardage: 450), Hole(par: 5, yardage: 570),
-                        Hole(par: 4, yardage: 460), Hole(par: 4, yardage: 495), Hole(par: 4, yardage: 505), Hole(par: 3, yardage: 155),
-                        Hole(par: 5, yardage: 510), Hole(par: 4, yardage: 440), Hole(par: 5, yardage: 530), Hole(par: 3, yardage: 170),
-                        Hole(par: 4, yardage: 440), Hole(par: 4, yardage: 465)
+                        Hole(number: 1, par: 4, yardage: 445), Hole(number: 2, par: 5, yardage: 575), Hole(number: 3, par: 4, yardage: 350), Hole(number: 4, par: 3, yardage: 240),
+                        Hole(number: 5, par: 4, yardage: 455), Hole(number: 6, par: 3, yardage: 180), Hole(number: 7, par: 4, yardage: 450), Hole(number: 8, par: 5, yardage: 570),
+                        Hole(number: 9, par: 4, yardage: 460), Hole(number: 10, par: 4, yardage: 495), Hole(number: 11, par: 4, yardage: 505), Hole(number: 12, par: 3, yardage: 155),
+                        Hole(number: 13, par: 5, yardage: 510), Hole(number: 14, par: 4, yardage: 440), Hole(number: 15, par: 5, yardage: 530), Hole(number: 16, par: 3, yardage: 170),
+                        Hole(number: 17, par: 4, yardage: 440), Hole(number: 18, par: 4, yardage: 465)
                     ]
                 ),
                 Tee(
@@ -122,11 +122,11 @@ struct CourseDetailView: View {
                     totalYards: 6980,
                     parTotal: 72,
                     holes: [
-                        Hole(par: 4, yardage: 400), Hole(par: 5, yardage: 520), Hole(par: 4, yardage: 320), Hole(par: 3, yardage: 200),
-                        Hole(par: 4, yardage: 410), Hole(par: 3, yardage: 165), Hole(par: 4, yardage: 420), Hole(par: 5, yardage: 500),
-                        Hole(par: 4, yardage: 425), Hole(par: 4, yardage: 450), Hole(par: 4, yardage: 455), Hole(par: 3, yardage: 140),
-                        Hole(par: 5, yardage: 460), Hole(par: 4, yardage: 400), Hole(par: 5, yardage: 490), Hole(par: 3, yardage: 160),
-                        Hole(par: 4, yardage: 400), Hole(par: 4, yardage: 425)
+                        Hole(number: 1, par: 4, yardage: 400), Hole(number: 2, par: 5, yardage: 520), Hole(number: 3, par: 4, yardage: 320), Hole(number: 4, par: 3, yardage: 200),
+                        Hole(number: 5, par: 4, yardage: 410), Hole(number: 6, par: 3, yardage: 165), Hole(number: 7, par: 4, yardage: 420), Hole(number: 8, par: 5, yardage: 500),
+                        Hole(number: 9, par: 4, yardage: 425), Hole(number: 10, par: 4, yardage: 450), Hole(number: 11, par: 4, yardage: 455), Hole(number: 12, par: 3, yardage: 140),
+                        Hole(number: 13, par: 5, yardage: 460), Hole(number: 14, par: 4, yardage: 400), Hole(number: 15, par: 5, yardage: 490), Hole(number: 16, par: 3, yardage: 160),
+                        Hole(number: 17, par: 4, yardage: 400), Hole(number: 18, par: 4, yardage: 425)
                     ]
                 )
             ]
