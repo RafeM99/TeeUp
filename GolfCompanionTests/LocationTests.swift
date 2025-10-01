@@ -249,7 +249,7 @@ struct LocationTests {
         ), distance: 8134.37),
         CourseDistance(course: Course(
             clubName: "Royal Melbourne Golf Club",
-            courseName: "West Course (Composite / Championship Routing)",
+            courseName: "West Course",
             location: Location(
                 address: "Cheltenham Rd, Black Rock, Victoria 3193",
                 city: "Melbourne",

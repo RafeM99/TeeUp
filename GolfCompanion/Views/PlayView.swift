@@ -14,6 +14,8 @@ struct PlayView: View {
     @State private var startRound = false
     @State private var tee: Tee? = nil
     @State var showingAlert: Bool = false
+    @State var roundScores: [Int] = []
+    @State var showingRoundSummary: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -95,12 +97,19 @@ struct PlayView: View {
             })
             .navigationDestination(isPresented: $startRound) {
                 if let tee {
-                    RoundView(course: $displayedCourse, tee: Binding(get: { tee }, set: { self.tee = $0 }), courseScores: $scores)
+                    RoundView(course: $displayedCourse, tee: Binding(get: { tee }, set: { self.tee = $0 }), courseScores: $scores, roundScores: $roundScores, showingRoundSummary: $showingRoundSummary)
                 }
             }
             .alert("No tee selected", isPresented: $showingAlert) {
                 Button("OK", role: .cancel) {}
             }
+            .sheet(isPresented: $showingRoundSummary, onDismiss: {
+                showingRoundSummary = false
+            }, content: {
+                if let tee {
+                    RoundSummaryView(tee: Binding(get: { tee }, set: { self.tee = $0 }), scores: $roundScores)
+                }
+            })
         }
     }
     

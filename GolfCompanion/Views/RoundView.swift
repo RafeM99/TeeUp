@@ -11,11 +11,12 @@ struct RoundView: View {
     @Binding var course: Course
     @Binding var tee: Tee
     @Binding var courseScores: [(String, String, Int)]
+    @Binding var roundScores: [Int]
+    @Binding var showingRoundSummary: Bool
     
     @Environment(\.dismiss) private var dismiss
     
     @State private var holeNumber: Int = 1
-    @State private var roundScores: [Int] = []
     @State private var showingAlert: Bool = false
     @State private var pendingScore: Int?
     @State private var totalScore: Int = 0
@@ -192,6 +193,7 @@ struct RoundView: View {
                     
                     courseScores.append((course.courseName, tee.teeName, totalScore))
                     
+                    showingRoundSummary = true
                     dismiss()
                 } else {
                     holeNumber += 1
