@@ -21,6 +21,7 @@ struct RoundView: View {
     @State private var pendingScore: Int?
     @State private var totalScore: Int = 0
     @State private var showScorecard: Bool = false
+    @State private var showCaddy: Bool = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -29,6 +30,29 @@ struct RoundView: View {
                     Text("Distance: \(tee.holes[holeNumber - 1].yardage)")
                     Text("Par: \(tee.holes[holeNumber - 1].par)")
                 }
+                
+                Section {
+                    HStack {
+                        Spacer()
+                        
+                        Button {
+                            showCaddy = true
+                        } label: {
+                            Text("Caddy")
+                                .font(.title)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(.black)
+                                .frame(minWidth: 150, minHeight: 70)
+                                .background(Color.white)
+                                .cornerRadius(25)
+                        }
+                        .buttonStyle(.plain)
+                        .listRowInsets(EdgeInsets())
+                        
+                        Spacer()
+                    }
+                }
+                .listRowBackground(Color.clear)
             }
             
             VStack(alignment: .leading) {
@@ -209,6 +233,9 @@ struct RoundView: View {
         }
         .navigationDestination(isPresented: $showScorecard) {
             Scorecard_View(tee: $tee, scores: $roundScores)
+        }
+        .navigationDestination(isPresented: $showCaddy) {
+            CaddyView()
         }
     }
 }

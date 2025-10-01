@@ -107,7 +107,9 @@ struct PlayView: View {
                 showingRoundSummary = false
             }, content: {
                 if let tee {
-                    RoundSummaryView(tee: Binding(get: { tee }, set: { self.tee = $0 }), scores: $roundScores)
+                    NavigationStack {
+                        RoundSummaryView(tee: Binding(get: { tee }, set: { self.tee = $0 }), scores: $roundScores, showingSheet: $showingRoundSummary)
+                    }
                 }
             })
         }
