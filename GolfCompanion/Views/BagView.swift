@@ -6,9 +6,11 @@
 //
 
 import SwiftUI
+import Observation
 
 struct BagView: View {
-    @State var bag = Bag(clubs: Bag.examples)
+    @Environment(Bag.self) private var bag
+    
     @State private var isShowingSheet: Bool = false
     
     var body: some View {
@@ -44,7 +46,6 @@ struct BagView: View {
                         isShowingSheet = true
                     }, label: {
                         Image(systemName: "plus")
-                            .padding(10)
                             .fontWeight(.bold)
                     })
                 }
@@ -52,6 +53,7 @@ struct BagView: View {
             .sheet(isPresented: $isShowingSheet, onDismiss: {
                 isShowingSheet = false
             }, content: {
+                @Bindable var bag = bag
                 AddClubView(clubs: $bag.clubs, isShowing: $isShowingSheet)
             })
         }
@@ -64,4 +66,5 @@ struct BagView: View {
 
 #Preview {
     BagView()
+        .environment(Bag(clubs: Bag.examples))
 }

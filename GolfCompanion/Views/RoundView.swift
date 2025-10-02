@@ -22,12 +22,14 @@ struct RoundView: View {
     @State private var totalScore: Int = 0
     @State private var showScorecard: Bool = false
     @State private var showCaddy: Bool = false
+    @State var showingCaddyAlert: Bool = false
+    @State var recommendedClub: String = ""
     
     var body: some View {
         VStack(spacing: 0) {
             Form {
                 Section {
-                    Text("Distance: \(tee.holes[holeNumber - 1].yardage)")
+                    Text("Distance: \(tee.holes[holeNumber - 1].yardage) yds")
                     Text("Par: \(tee.holes[holeNumber - 1].par)")
                 }
                 
@@ -234,8 +236,11 @@ struct RoundView: View {
         .navigationDestination(isPresented: $showScorecard) {
             Scorecard_View(tee: $tee, scores: $roundScores)
         }
-        .navigationDestination(isPresented: $showCaddy) {
-            CaddyView()
+        .sheet(isPresented: $showCaddy) {
+            CaddyView(clubToHit: $recommendedClub, showingAlert: $showingCaddyAlert)
+        }
+        .alert("Recommended club: \(recommendedClub)", isPresented: $showingCaddyAlert, presenting: recommendedClub) {_ in 
+            Button("OK", role: .cancel) {}
         }
     }
 }

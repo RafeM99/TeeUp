@@ -7,7 +7,8 @@
 
 import Foundation
 
-struct Bag {
+@Observable
+class Bag {
     var clubs: [Club]
     
     static var examples: [Club] {
@@ -24,5 +25,9 @@ struct Bag {
             Club(type: .sandWedge, brand: "Cleveland", isLeftHanded: false, distance: 85),
             Club(type: .putter, brand: "Odyssey", isLeftHanded: true, distance: 50)
         ]
+    }
+    
+    init(clubs: [Club]) {
+        self.clubs = clubs
     }
 }

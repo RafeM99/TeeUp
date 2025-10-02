@@ -123,4 +123,5 @@ struct PlayView: View {
 
 #Preview {
     PlayView()
+        .environment(Bag(clubs: Bag.examples))
 }

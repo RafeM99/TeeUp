@@ -60,9 +60,10 @@ struct RoundSummaryView: View {
                     Button {
                         showingSheet = false
                     } label: {
-                        Image(systemName: "xmark.circle.fill")
+                        Image(systemName: "xmark")
                             .font(.title2)
                             .foregroundColor(.secondary)
+                            .imageScale(.medium)
                     }
                 }
             }
@@ -86,9 +87,9 @@ struct RoundSummaryView: View {
         if diff == 0 {
             return .gray
         } else if diff > 0 {
-            return .red
+            return .blue
         } else {
-            return .green
+            return .red
         }
     }
 }
