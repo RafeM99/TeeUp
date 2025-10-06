@@ -192,6 +192,7 @@ struct RoundView: View {
             
             ToolbarItem(placement: .topBarLeading) {
                 Button {
+                    roundScores = []
                     dismiss()
                 } label: {
                     HStack(spacing: 4) {
