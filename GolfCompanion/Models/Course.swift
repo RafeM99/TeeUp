@@ -14,7 +14,7 @@ class Course: Identifiable, @unchecked Sendable, Decodable {
     let clubName: String
     let courseName: String
     let location: Location
-    var tees: TeeTypes
+    let tees: TeeTypes
     var isFavourite: Bool = false
     
     init(courseId: Int, clubName: String, courseName: String, location: Location, tees: TeeTypes) {
@@ -23,6 +23,13 @@ class Course: Identifiable, @unchecked Sendable, Decodable {
         self.courseName = courseName
         self.location = location
         self.tees = tees
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case courseId = "id"
+        case clubName = "club_name"
+        case courseName = "course_name"
+        case location, tees
     }
     
     static var courseExamples: [Course] {

@@ -18,49 +18,50 @@ struct CourseDetailView: View {
                 }
                 
                 Section(content: {
-                    Text("\(course.location.address)")
-                    Text("\(course.location.city)")
-                    Text("\(course.location.state)")
-                    Text("\(course.location.country)")
+                    Text(course.location.displayText)
                 }, header: {
                     Text("Address")
                 })
                 
-                Section(content: {
-                    ForEach(course.tees.male, id: \.id) { tee in
-                        NavigationLink(destination: {
-                            TeeDetailView(tee: tee)
-                        }, label: {
-                            VStack(alignment: .leading) {
-                                Text("\(tee.teeName)")
-                                    .font(.title3)
-                                    .fontWeight(.semibold)
-                                Text("Total yards: \(tee.totalYards)")
-                                Text("Par: \(tee.parTotal)")
-                            } 
-                        })
-                    }
-                }, header: {
-                    Text("Male Tees")
-                })
+                if let maleTees = course.tees.male, !maleTees.isEmpty {
+                    Section(content: {
+                        ForEach(maleTees, id: \.id) { tee in
+                            NavigationLink(destination: {
+                                TeeDetailView(tee: tee)
+                            }, label: {
+                                VStack(alignment: .leading) {
+                                    Text("\(tee.teeName)")
+                                        .font(.title3)
+                                        .fontWeight(.semibold)
+                                    Text("Total yards: \(tee.totalYards)")
+                                    Text("Par: \(tee.parTotal)")
+                                }
+                            })
+                        }
+                    }, header: {
+                        Text("Male Tees")
+                    })
+                }
                 
-                Section(content: {
-                    ForEach(course.tees.female, id: \.id) { tee in
-                        NavigationLink(destination: {
-                            TeeDetailView(tee: tee)
-                        }, label: {
-                            VStack(alignment: .leading) {
-                                Text("\(tee.teeName)")
-                                    .font(.title3)
-                                    .fontWeight(.semibold)
-                                Text("Total yards: \(tee.totalYards)")
-                                Text("Par: \(tee.parTotal)")
-                            }
-                        })
-                    }
-                }, header: {
-                    Text("Female Tees")
-                })
+                if let femaleTees = course.tees.female, !femaleTees.isEmpty {
+                    Section(content: {
+                        ForEach(femaleTees, id: \.id) { tee in
+                            NavigationLink(destination: {
+                                TeeDetailView(tee: tee)
+                            }, label: {
+                                VStack(alignment: .leading) {
+                                    Text("\(tee.teeName)")
+                                        .font(.title3)
+                                        .fontWeight(.semibold)
+                                    Text("Total yards: \(tee.totalYards)")
+                                    Text("Par: \(tee.parTotal)")
+                                }
+                            })
+                        }
+                    }, header: {
+                        Text("Female Tees")
+                    })
+                }
             }
             .navigationTitle("\(course.courseName)")
             .toolbar {

@@ -97,7 +97,9 @@ struct RoundSummaryView: View {
 
 #Preview {
     NavigationStack {
-        if let sampleTee = Course.courseExamples.first?.tees.male.first {
+        if let course = Course.courseExamples.first,
+           let maleTees = course.tees.male,
+           let sampleTee = maleTees.first {
             RoundSummaryView(tee: .constant(sampleTee), scores: .constant(Array(repeating: 4, count: 18)), showingSheet: .constant(true))
         } else {
             Text("No sample tee available")

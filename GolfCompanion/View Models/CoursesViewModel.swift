@@ -44,18 +44,23 @@ class CoursesViewModel {
         var distances: [(Course, Double)] = []
         
         for course in courseList {
-            let courseLat = course.location.latitude
-            let courseLon = course.location.longitude
+            // Skip courses without coordinates
+            guard let courseLat = course.location.latitude,
+                  let courseLon = course.location.longitude else {
+                continue
+            }
             
             let distance = calculateDistance(courseLat: courseLat, courseLon: courseLon, userLat: userCoordinates.0, userLon: userCoordinates.1)
             distances.append((course, distance))
         }
         
-        distances.sort{$0.1 < $1.1}
+        distances.sort { $0.1 < $1.1 }
         
         var nearestCourses: [CourseDistance] = []
         
-        for i in 0...4 {
+        // Only take up to 5 courses (or fewer if less than 5 available)
+        let count = min(5, distances.count)
+        for i in 0..<count {
             nearestCourses.append(CourseDistance(course: distances[i].0, distance: distances[i].1))
         }
         

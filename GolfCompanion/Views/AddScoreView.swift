@@ -13,30 +13,36 @@ struct AddScoreView: View {
     @Binding var isShowing: Bool
     
     @State var newScore: Double = 0.0
-    @State var newTee: Tee = Course.courseExamples.first!.tees.male.first!
+    @State var newTee: Tee?
     
     var body: some View {
         List {
             Picker("Select tee", selection: $newTee) {
-                Section(content: {
-                    ForEach(course.tees.male, id:\.id) { tee in
-                        Text(tee.teeName).tag(tee)
-                    }
-                }, header: {
-                    Text("Male tees")
-                })
+                if let maleTees = course.tees.male {
+                    Section(content: {
+                        ForEach(maleTees, id: \.id) { tee in
+                            Text(tee.teeName).tag(tee as Tee?)
+                        }
+                    }, header: {
+                        Text("Male tees")
+                    })
+                }
                 
-                Section(content: {
-                    ForEach(course.tees.female, id:\.id) { tee in
-                        Text(tee.teeName).tag(tee)
-                    }
-                }, header: {
-                    Text("Female tees")
-                })
+                if let femaleTees = course.tees.female {
+                    Section(content: {
+                        ForEach(femaleTees, id: \.id) { tee in
+                            Text(tee.teeName).tag(tee as Tee?)
+                        }
+                    }, header: {
+                        Text("Female tees")
+                    })
+                }
             }
-            .onChange(of: newTee, {
-                newScore = Double(newTee.parTotal)
-            })
+            .onChange(of: newTee) {
+                if let tee = newTee {
+                    newScore = Double(tee.parTotal)
+                }
+            }
             
             VStack(alignment: .leading) {
                 Text("Total score: \(newScore, specifier: "%.0f")")
@@ -54,17 +60,28 @@ struct AddScoreView: View {
                 Spacer()
                 
                 Button(action: {
-                    let newScore = (course.courseName, newTee.teeName, Int(newScore))
+                    guard let tee = newTee else { return }
+                    let newScore = (course.courseName, tee.teeName, Int(newScore))
                     scores.append(newScore)
                     isShowing = false
                 }, label: {
                     Text("Add Score")
                 })
+                .disabled(newTee == nil)
                 
                 Spacer()
             }
         }
         .presentationDetents([.fraction(0.3)])
+        .onAppear {
+            // Set initial tee selection
+            if newTee == nil {
+                newTee = course.tees.male?.first ?? course.tees.female?.first
+                if let tee = newTee {
+                    newScore = Double(tee.parTotal)
+                }
+            }
+        }
     }
 }
 

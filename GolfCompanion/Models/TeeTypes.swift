@@ -9,6 +9,11 @@ import Foundation
 
 struct TeeTypes: Sendable, Decodable {
     var id = UUID()
-    let female: [Tee]
-    let male: [Tee]
+    let female: [Tee]?
+    let male: [Tee]?
+    
+    enum CodingKeys: String, CodingKey {
+        case female
+        case male
+    }
 }

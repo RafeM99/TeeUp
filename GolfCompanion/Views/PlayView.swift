@@ -42,21 +42,25 @@ struct PlayView: View {
                 
                 Section(content: {
                     Picker("Select tee", selection: $tee) {
-                        Section(content: {
-                            ForEach(displayedCourse.tees.male, id:\.id) { tee in
-                                Text(tee.teeName).tag(tee)
-                            }
-                        }, header: {
-                            Text("Male tees")
-                        })
+                        if let maleTees = displayedCourse.tees.male {
+                            Section(content: {
+                                ForEach(maleTees, id: \.id) { tee in
+                                    Text(tee.teeName).tag(tee as Tee?)
+                                }
+                            }, header: {
+                                Text("Male tees")
+                            })
+                        }
                         
-                        Section(content: {
-                            ForEach(displayedCourse.tees.female, id:\.id) { tee in
-                                Text(tee.teeName).tag(tee)
-                            }
-                        }, header: {
-                            Text("Female tees")
-                        })
+                        if let femaleTees = displayedCourse.tees.female {
+                            Section(content: {
+                                ForEach(femaleTees, id: \.id) { tee in
+                                    Text(tee.teeName).tag(tee as Tee?)
+                                }
+                            }, header: {
+                                Text("Female tees")
+                            })
+                        }
                     }
                 }, header: {
                     Text("Play")
