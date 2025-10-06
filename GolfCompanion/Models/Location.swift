@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Location: Sendable {
+struct Location: Sendable, Decodable {
     let address: String
     let city: String
     let state: String

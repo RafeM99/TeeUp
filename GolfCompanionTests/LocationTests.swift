@@ -24,6 +24,7 @@ struct LocationTests {
     
     @Test("Testing nearest courses", arguments: [(courseList: Course.courseExamples, userCoordinates: (37.3346, -122.0090), expectedResult: [
         CourseDistance(course: Course(
+            courseId: 3,
             clubName: "Pebble Beach Golf Links",
             courseName: "Pebble Beach",
             location: Location(
@@ -78,6 +79,7 @@ struct LocationTests {
             )
         ), distance: 85.35),
         CourseDistance(course: Course(
+            courseId: 2,
             clubName: "City Park Golf Club",
             courseName: "Lakeside Course",
             location: Location(
@@ -126,6 +128,7 @@ struct LocationTests {
             )
         ), distance: 2810.79),
         CourseDistance(course: Course(
+            courseId: 1,
             clubName: "Augusta National Golf Club",
             courseName: "Augusta National",
             location: Location(
@@ -180,6 +183,7 @@ struct LocationTests {
             )
         ), distance: 3621.44),
         CourseDistance(course: Course(
+            courseId: 4,
             clubName: "St Andrews Links",
             courseName: "Old Course",
             location: Location(
@@ -248,6 +252,7 @@ struct LocationTests {
             )
         ), distance: 8134.37),
         CourseDistance(course: Course(
+            courseId: 5,
             clubName: "Royal Melbourne Golf Club",
             courseName: "West Course",
             location: Location(

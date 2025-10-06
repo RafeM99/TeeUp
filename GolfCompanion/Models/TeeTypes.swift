@@ -7,8 +7,8 @@
 
 import Foundation
 
-struct TeeTypes: Sendable {
-    let id = UUID()
+struct TeeTypes: Sendable, Decodable {
+    var id = UUID()
     let female: [Tee]
     let male: [Tee]
 }

@@ -6,3 +6,7 @@
 //
 
 import Foundation
+
+struct CourseAPIResponse: Decodable {
+    let courses: [Course]
+}

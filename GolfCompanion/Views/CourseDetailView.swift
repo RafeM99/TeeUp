@@ -79,6 +79,7 @@ struct CourseDetailView: View {
 
 #Preview {
     CourseDetailView(course: Course(
+        courseId: 1,
         clubName: "Augusta National Golf Club",
         courseName: "Augusta National",
         location: Location(

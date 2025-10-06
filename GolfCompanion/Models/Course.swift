@@ -8,15 +8,17 @@
 import Foundation
 
 @Observable
-class Course: Identifiable, @unchecked Sendable {
-    let id = UUID()
+class Course: Identifiable, @unchecked Sendable, Decodable {
+    var id = UUID()
+    let courseId: Int
     let clubName: String
     let courseName: String
     let location: Location
     var tees: TeeTypes
     var isFavourite: Bool = false
     
-    init(clubName: String, courseName: String, location: Location, tees: TeeTypes) {
+    init(courseId: Int, clubName: String, courseName: String, location: Location, tees: TeeTypes) {
+        self.courseId = courseId
         self.clubName = clubName
         self.courseName = courseName
         self.location = location
@@ -26,6 +28,7 @@ class Course: Identifiable, @unchecked Sendable {
     static var courseExamples: [Course] {
         return [
             Course(
+                courseId: 1,
                 clubName: "Augusta National Golf Club",
                 courseName: "Augusta National",
                 location: Location(
@@ -80,6 +83,7 @@ class Course: Identifiable, @unchecked Sendable {
                 )
             ),
             Course(
+                courseId: 2,
                 clubName: "City Park Golf Club",
                 courseName: "Lakeside Course",
                 location: Location(
@@ -128,6 +132,7 @@ class Course: Identifiable, @unchecked Sendable {
                 )
             ),
             Course(
+                courseId: 3,
                 clubName: "Pebble Beach Golf Links",
                 courseName: "Pebble Beach",
                 location: Location(
@@ -182,6 +187,7 @@ class Course: Identifiable, @unchecked Sendable {
                 )
             ),
             Course(
+                courseId: 4,
                 clubName: "St Andrews Links",
                 courseName: "Old Course",
                 location: Location(
@@ -250,6 +256,7 @@ class Course: Identifiable, @unchecked Sendable {
                 )
             ),
             Course(
+                courseId: 5,
                 clubName: "Royal Melbourne Golf Club",
                 courseName: "West Course",
                 location: Location(
