@@ -13,6 +13,7 @@ class CourseAPIManager {
     }
     
     func searchCourses(query: String, completion: @escaping @Sendable ([Course]) -> Void) {
+        // add query components to header
         var urlComponents = URLComponents(string: "https://api.golfcourseapi.com/v1/search")
         urlComponents?.queryItems = [
             URLQueryItem(name: "search_query", value: query)
@@ -24,24 +25,25 @@ class CourseAPIManager {
             return
         }
         
-        // Debug: Log the request URL and query items
+        // log the request URL and query items
         print("CourseAPIManager: GET \(url.absoluteString)")
         if let items = urlComponents?.queryItems {
             let qs = items.map { "\($0.name)=\($0.value ?? "")" }.joined(separator: "&")
             print("Query items: \(qs)")
         }
         
+        // formulate a request for the api
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.addValue("Key 2NBEUHWTKI6HHVT6SDSQTZKR24", forHTTPHeaderField: "Authorization")
         
-        // Debug: Log masked Authorization header
+        // log masked Authorization header
         if let auth = request.value(forHTTPHeaderField: "Authorization") {
             let masked = auth.count > 12 ? String(auth.prefix(12)) + "…" : auth
             print("Authorization header: \(masked)")
         }
         
-        // Capture the URL string before the closure to avoid Sendable warning
+        // capture the URL string before the closure to avoid Sendable warning
         let urlString = url.absoluteString
         
         URLSession.shared.dataTask(with: request) { data, response, error in
@@ -78,7 +80,7 @@ class CourseAPIManager {
 
             do {
                 let decodedResponse = try JSONDecoder().decode(CourseAPIResponse.self, from: data)
-                // Debug: Log decoded course count
+                // log decoded course count
                 print("Decoded courses count: \(decodedResponse.courses.count)")
                 DispatchQueue.main.async { completion(decodedResponse.courses) }
             } catch {
