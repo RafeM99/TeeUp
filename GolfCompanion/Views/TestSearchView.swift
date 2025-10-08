@@ -38,13 +38,19 @@ struct TestSearchView: View {
                 .padding(.vertical, 8)
         }
 
-        List(courses) { course in
-            VStack(alignment: .leading, spacing: 2) {
-                Text(course.clubName)
-                    .font(.headline)
-                Text(course.courseName)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+        NavigationStack {
+            List(courses) { course in
+                NavigationLink(destination: {
+                    CourseDetailView(course: course)
+                }, label: {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(course.courseName)
+                            .font(.headline)
+                        Text(course.clubName)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                })
             }
         }
     }

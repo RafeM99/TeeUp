@@ -9,6 +9,10 @@ import SwiftUI
 
 struct CoursesView: View {
     @State private var vm: CoursesViewModel = CoursesViewModel()
+    private let apiManager = CourseAPIManager()
+    @State private var query: String = ""
+    @State private var isLoading = false
+    @State private var message: String? = nil
     
     var body: some View {
         NavigationStack {
@@ -64,6 +68,25 @@ struct CoursesView: View {
                 vm.updateLocation()
                 vm.courses.sort {$0.isFavourite && !$1.isFavourite}
             })
+        }
+        .searchable(text: $vm.searchText, prompt: "Enter course or club name...")
+    }
+    
+    private func fetchCourses(query: String) {
+        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+
+        isLoading = true
+        message = nil
+
+        apiManager.searchCourses(query: trimmed) { courses in
+            Task { @MainActor in
+                self.isLoading = false
+                vm.courses = courses
+                if courses.isEmpty {
+                    self.message = "No results"
+                }
+            }
         }
     }
 }

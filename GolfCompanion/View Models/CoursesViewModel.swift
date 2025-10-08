@@ -13,6 +13,7 @@ class CoursesViewModel {
     var coordinates: (Double, Double) = (0.0, 0.0)
     var courses = Course.courseExamples
     var nearestCourses: [CourseDistance] = []
+    var searchText = ""
     
     func updateLocation() {
         //invokes the location handler instance's method to request location and passes it a closure representing the code to do when the location update responds!
