@@ -9,7 +9,7 @@ import Testing
 @testable import GolfCompanion
 
 struct LocationTests {
-    @Test(" Testing distance calculation", arguments: [
+    @MainActor @Test(" Testing distance calculation", arguments: [
             (33.5028, -82.0223, 37.3346, -122.0090, "3621.44"),
             (39.7997, -89.6558, 37.3346, -122.0090, "2810.79"),
             (36.5684, -121.9507, 37.3346, -122.0090, "85.35"),
@@ -22,7 +22,7 @@ struct LocationTests {
         #expect(result == expectedDistance)
     }
     
-    @Test("Testing nearest courses", arguments: [(courseList: Course.courseExamples, userCoordinates: (37.3346, -122.0090), expectedResult: [
+    @MainActor @Test("Testing nearest courses", arguments: [(courseList: Course.courseExamples, userCoordinates: (37.3346, -122.0090), expectedResult: [
         CourseDistance(course: Course(
             courseId: 3,
             clubName: "Pebble Beach Golf Links",

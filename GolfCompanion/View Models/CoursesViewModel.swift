@@ -6,20 +6,21 @@
 //
 
 import Foundation
+import MapKit
+import CoreLocation
 
-@Observable
+@MainActor @Observable
 class CoursesViewModel {
     private let locationDataManager = LocationDataManager()
     var coordinates: (Double, Double) = (0.0, 0.0)
     var courses = Course.courseExamples
     var nearestCourses: [CourseDistance] = []
-    var searchText = ""
     
     func updateLocation() {
         //invokes the location handler instance's method to request location and passes it a closure representing the code to do when the location update responds!
-        locationDataManager.requestLocation(completion: { coordinate in
-            self.coordinates = coordinate
-            self.nearestCourses = self.findNearestCourses(courseList: Course.courseExamples, userCoordinates: self.coordinates)
+        locationDataManager.requestLocation(completion: { [weak self] coordinate in
+            self?.coordinates = coordinate
+            self?.nearestCourses = self?.findNearestCourses(courseList: Course.courseExamples, userCoordinates: self?.coordinates ?? (0.0, 0.0)) ?? []
         })
     }
     
@@ -66,5 +67,81 @@ class CoursesViewModel {
         }
         
         return nearestCourses
+    }
+    
+    func fetchNearbyCoursesWithMapKit() async {
+        let (lat, lon) = coordinates
+        let localCourses = courses
+        // if coordiates are still defualt (0,0), exit function
+        guard lat != 0.0 || lon != 0.0 else { return }
+        
+        let center = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+        let region = MKCoordinateRegion(
+            center: center,
+            latitudinalMeters: 30_000,
+            longitudinalMeters: 30_000
+        )
+
+        let request = MKLocalSearch.Request()
+        request.naturalLanguageQuery = "golf course"
+        request.resultTypes = .pointOfInterest
+        request.pointOfInterestFilter = MKPointOfInterestFilter(including: [.golf])
+        request.region = region
+
+        let search = MKLocalSearch(request: request)
+
+        do {
+            let response = try await search.start()
+
+            // MapKit results simplified
+            let items: [(name: String, coordinate: CLLocationCoordinate2D)] = response.mapItems.compactMap { item in
+                guard let name = item.name else { return nil }
+                return (name: name, coordinate: item.placemark.coordinate)
+            }
+
+            // Resolve against your in-memory courses first (Course.courseExamples) by name proximity
+            // If you later have API resolution, plug that in here.
+            var resolved: [(Course, Double)] = []
+
+            for item in items {
+                // Simple name match against known courses
+                let lower = item.name.lowercased()
+                if let match = localCourses.first(where: { c in
+                    c.courseName.lowercased() == lower ||
+                    c.clubName.lowercased() == lower ||
+                    c.courseName.lowercased().contains(lower) ||
+                    lower.contains(c.courseName.lowercased()) ||
+                    c.clubName.lowercased().contains(lower) ||
+                    lower.contains(c.clubName.lowercased())
+                }) {
+                    // Compute distance using your existing function
+                    if let courseLat = match.location.latitude, let courseLon = match.location.longitude {
+                        let d = calculateDistance(courseLat: courseLat, courseLon: courseLon, userLat: lat, userLon: lon)
+                        resolved.append((match, d))
+                    }
+                }
+            }
+
+            // If nothing matched by name, just compute nearest from your known list by coordinates
+            if resolved.isEmpty {
+                let nearest = findNearestCourses(courseList: localCourses, userCoordinates: (lat, lon))
+                self.nearestCourses = nearest
+                return
+            }
+
+            // Sort by distance and limit to 5
+            resolved.sort { $0.1 < $1.1 }
+            let limited = resolved.prefix(5)
+            let mapped: [CourseDistance] = limited.map { pair in
+                CourseDistance(course: pair.0, distance: pair.1)
+            }
+
+            self.nearestCourses = mapped
+
+        } catch {
+            // On error, fall back to local nearest computation
+            let fallback = findNearestCourses(courseList: localCourses, userCoordinates: (lat, lon))
+            self.nearestCourses = fallback
+        }
     }
 }

@@ -8,19 +8,89 @@
 import SwiftUI
 
 struct CourseSearchView: View {
+    @Binding var query: String
+    @Binding var isLoading: Bool
+    
     private let apiManager = CourseAPIManager()
-    @State private var courses: [Course] = []
-    @State private var query: String = ""
-    @State private var isLoading = false
+    @State var courses: [Course] = []
     @State private var message: String? = nil
+    @State private var searchTask: Task<Void, Never>? = nil
     
     var body: some View {
-        NavigationStack {
-            if courses.isEmpty {
-                Text("No results")
+        ZStack {
+            VStack(spacing: 0) {
+                if !courses.isEmpty {
+                    List(courses) { course in
+                        NavigationLink(destination: {
+                            CourseDetailView(course: course)
+                        }, label: {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(course.courseName)
+                                    .font(.headline)
+                                Text(course.clubName)
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
+                        })
+                    }
+                } else if !isLoading, let message = message {
+                    // centered message when there are no results
+                    VStack {
+                        Spacer()
+                        Text(message)
+                            .multilineTextAlignment(.center)
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal, 24)
+                        Spacer()
+                    }
+                } else {
+                    // when empty but no message, show nothing to avoid top padding
+                    Spacer(minLength: 0)
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(.ultraThinMaterial)
+            .disabled(isLoading)
+            .blur(radius: isLoading ? 1 : 0)
+            
+            if isLoading {
+                // fullscreen loading overlay
+                Color.black.opacity(0.1)
+                    .ignoresSafeArea()
+                VStack(spacing: 12) {
+                    ProgressView("Searching…")
+                        .progressViewStyle(.circular)
+                        .tint(.accentColor)
+                    
+                }
+                .padding(24)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(.thinMaterial)
+                .ignoresSafeArea()
             }
         }
-        .searchable(text: $query, prompt: "Enter course or club name...")
+        .onChange(of: query) {
+            let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+            // if cleared, reset state and stop loading
+            guard !trimmed.isEmpty else {
+                searchTask?.cancel()
+                isLoading = false
+                courses.removeAll()
+                message = nil
+                return
+            }
+            
+            print("Query changed to:", query)
+
+            // Cancel any in-flight debounce task
+            searchTask?.cancel()
+
+            // Debounce: wait briefly before firing the search
+            searchTask = Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 300_000_000) // 300ms
+                fetchCourses(query: trimmed)
+            }
+        }
     }
     
     private func fetchCourses(query: String) {
@@ -42,6 +112,6 @@ struct CourseSearchView: View {
     }
 }
 
-#Preview {
-    CourseSearchView()
-}
+//#Preview {
+//    CourseSearchView()
+//}
