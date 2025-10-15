@@ -58,15 +58,15 @@ struct CoursesView: View {
                             }
                         })
                     }
-                    .task { @MainActor in
-                        await vm.fetchNearbyCoursesWithMapKit()
-                    }
-                    .refreshable { @MainActor in
-                        await vm.fetchNearbyCoursesWithMapKit()
-                    }
-                    .onAppear {
-                        vm.updateLocation()
-                    }
+//                    .task { @MainActor in
+//                        await vm.fetchNearbyCoursesWithMapKit()
+//                    }
+//                    .refreshable { @MainActor in
+//                        await vm.fetchNearbyCoursesWithMapKit()
+//                    }
+//                    .onAppear {
+//                        vm.updateLocation()
+//                    }
                 }, header: {
                     Text("Other courses near you")
                 })
@@ -76,6 +76,7 @@ struct CoursesView: View {
             .onAppear(perform: {
                 vm.updateLocation()
                 vm.courses.sort {$0.isFavourite && !$1.isFavourite}
+                vm.fetchCourses(userLocation: vm.coordinates)
             })
             .searchable(text: $query, isPresented: $isSearchPresented, prompt: "Enter course or club name...")
             .onChange(of: query) {
