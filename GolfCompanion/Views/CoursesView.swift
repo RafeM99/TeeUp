@@ -76,7 +76,7 @@ struct CoursesView: View {
             .onAppear(perform: {
                 vm.updateLocation()
                 vm.courses.sort {$0.isFavourite && !$1.isFavourite}
-                vm.fetchCourses(userLocation: vm.coordinates)
+                vm.fetchNearbyCoursesWithMapKit(userLocation: vm.coordinates)
             })
             .searchable(text: $query, isPresented: $isSearchPresented, prompt: "Enter course or club name...")
             .onChange(of: query) {

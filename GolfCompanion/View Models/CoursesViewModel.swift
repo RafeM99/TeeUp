@@ -17,32 +17,29 @@ class CoursesViewModel {
     var nearestCourses: [CourseDistance] = []
     
     func updateLocation() {
-        //invokes the location handler instance's method to request location and passes it a closure representing the code to do when the location update responds!
-        locationDataManager.requestLocation(completion: { [weak self] coordinate in
-            self?.coordinates = coordinate
-            self?.nearestCourses = self?.findNearestCourses(courseList: Course.courseExamples, userCoordinates: self?.coordinates ?? (0.0, 0.0)) ?? []
-        })
+        locationDataManager.requestLocation { [weak self] coordinate in
+            guard let self else { return }
+            self.coordinates = coordinate
+            print("User location: \(coordinate.0), \(coordinate.1)")
+            self.nearestCourses = self.findNearestCourses(
+                courseList: Course.courseExamples,
+                userCoordinates: self.coordinates
+            )
+        }
     }
     
     // Calculates distance between two coordinates in km
     func calculateDistance(courseLat: Double, courseLon: Double, userLat: Double, userLon: Double) -> Double {
-        let R = 6371.0 //Radius of Earth in km
-        
-        let dLat = (userLat - courseLat) * .pi / 180
-        let dLon = (userLon - courseLon) * .pi / 180
-        
-        let radCourseLat = courseLat * .pi / 180
-        let radUserLat = userLat * .pi / 180
-        
-        let a = sin(dLat / 2) * sin(dLat / 2) + cos(radCourseLat) * cos(radUserLat) * sin(dLon / 2) * sin(dLon / 2)
-        
-        let c = 2 * atan2(sqrt(a), sqrt(1-a))
-        
-        let distance = R * c
-        return distance
+        let course = CLLocation(latitude: courseLat, longitude: courseLon)
+        let user = CLLocation(latitude: userLat, longitude: userLon)
+        // distance(from:) returns meters; convert to kilometers
+        return course.distance(from: user) / 1000.0
     }
     
     func findNearestCourses(courseList: [Course], userCoordinates: (Double, Double)) -> [CourseDistance] {
+        // Guard against default or invalid coordinates
+        guard userCoordinates.0 != 0.0 || userCoordinates.1 != 0.0 else { return [] }
+        
         var distances: [(Course, Double)] = []
         
         for course in courseList {
@@ -146,6 +143,9 @@ class CoursesViewModel {
 //    }
     
     func sortNearestCoursesForLightweightMapItems(courseList: [LightweightMapItem], userCoordinates: (Double, Double)) -> [(LightweightMapItem, Double)] {
+        // Guard against default or invalid coordinates
+        guard userCoordinates.0 != 0.0 || userCoordinates.1 != 0.0 else { return [] }
+        
         var courses: [(LightweightMapItem, Double)] = []
         
         for course in courseList {
@@ -161,8 +161,8 @@ class CoursesViewModel {
         return courses
     }
     
-    func fetchCourses(userLocation: (Double, Double)) {
-        let searchSpan = MKCoordinateSpan(latitudeDelta: 0.5, longitudeDelta: 0.5)
+    func fetchNearbyCoursesWithMapKit(userLocation: (Double, Double)) {
+        let searchSpan = MKCoordinateSpan(latitudeDelta: 0.15, longitudeDelta: 0.15)
         let userCenter = CLLocationCoordinate2D(latitude: userLocation.0, longitude: userLocation.1)
         let searchRegion = MKCoordinateRegion(center: userCenter, span: searchSpan)
         
@@ -182,7 +182,10 @@ class CoursesViewModel {
             let results = mapItems.map({LightweightMapItem(name: $0.name ?? "No Name Found", coordinates: ($0.placemark.coordinate.latitude, $0.placemark.coordinate.longitude))})
             
             let sortedResults = self.sortNearestCoursesForLightweightMapItems(courseList: results, userCoordinates: userLocation)
-            print(sortedResults)
+            for (item, distance) in sortedResults.prefix(10) {
+                let km = String(format: "%.2f km", distance)
+                print("\(item.name): \(km)")
+            }
         }
     }
 }
