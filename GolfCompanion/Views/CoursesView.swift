@@ -42,31 +42,39 @@ struct CoursesView: View {
                 })
                 
                 Section(content: {
-                    ForEach(vm.nearestCourses, id: \.id) {course in
-                        NavigationLink(destination: {
-                            CourseDetailView(course: course.course)
-                        }, label: {
-                            HStack {
-                                Text("\(course.course.courseName)")
-                                
-                                Spacer()
-                                
-                                Text("\(course.distance, specifier: "%.1f")km away")
-                                    .font(.caption2)
-                                    .fontWeight(.semibold)
-                                    .foregroundStyle(.gray)
-                            }
-                        })
+                    if vm.isLoading {
+                        ProgressView("Finding nearby courses…")
+                    } else if let message = vm.message, vm.nearestCourses.isEmpty {
+                        Text(message)
+                            .foregroundStyle(.secondary)
+                    } else if !vm.nearestCourses.isEmpty {
+                        ForEach(vm.nearestCourses) { course in
+                            NavigationLink(destination: {
+                                CourseDetailView(course: course)
+                            }, label: {
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(course.courseName)
+                                            .font(.headline)
+                                        Text(course.clubName)
+                                            .font(.subheadline)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                    
+                                    Spacer()
+                                        
+                                    if let match = vm.nearestCoursesToDisplay.first(where: { $0.name.lowercased() == course.courseName.lowercased() }) {
+                                        Text("\(match.distanceKm, specifier: "%.1f")km away")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
+                            })
+                        }
+                    } else {
+                        // Initial state before location search starts
+                        ProgressView("Finding nearby courses…")
                     }
-//                    .task { @MainActor in
-//                        await vm.fetchNearbyCoursesWithMapKit()
-//                    }
-//                    .refreshable { @MainActor in
-//                        await vm.fetchNearbyCoursesWithMapKit()
-//                    }
-//                    .onAppear {
-//                        vm.updateLocation()
-//                    }
                 }, header: {
                     Text("Other courses near you")
                 })
@@ -76,7 +84,6 @@ struct CoursesView: View {
             .onAppear(perform: {
                 vm.updateLocation()
                 vm.courses.sort {$0.isFavourite && !$1.isFavourite}
-                vm.fetchNearbyCoursesWithMapKit(userLocation: vm.coordinates)
             })
             .searchable(text: $query, isPresented: $isSearchPresented, prompt: "Enter course or club name...")
             .onChange(of: query) {
