@@ -165,6 +165,7 @@ class CoursesViewModel {
 
         for course in courseList {
             let query = course.name.trimmingCharacters(in: .whitespacesAndNewlines)
+            print(query)
             guard !query.isEmpty else { continue }
 
             group.enter()
