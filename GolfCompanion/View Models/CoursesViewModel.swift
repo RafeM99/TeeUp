@@ -43,36 +43,6 @@ class CoursesViewModel {
         return course.distance(from: user) / 1000.0
     }
     
-//    func findNearestCourses(courseList: [Course], userCoordinates: (Double, Double)) -> [CourseDistance] {
-//        // Guard against default or invalid coordinates
-//        guard userCoordinates.0 != 0.0 || userCoordinates.1 != 0.0 else { return [] }
-//        
-//        var distances: [(Course, Double)] = []
-//        
-//        for course in courseList {
-//            // Skip courses without coordinates
-//            guard let courseLat = course.location.latitude,
-//                  let courseLon = course.location.longitude else {
-//                continue
-//            }
-//            
-//            let distance = calculateDistance(courseLat: courseLat, courseLon: courseLon, userLat: userCoordinates.0, userLon: userCoordinates.1)
-//            distances.append((course, distance))
-//        }
-//        
-//        distances.sort { $0.1 < $1.1 }
-//        
-//        var nearestCourses: [CourseDistance] = []
-//        
-//        // Only take up to 5 courses (or fewer if less than 5 available)
-//        let count = min(5, distances.count)
-//        for i in 0..<count {
-//            nearestCourses.append(CourseDistance(course: distances[i].0, distance: distances[i].1))
-//        }
-//        
-//        return nearestCourses
-//    }
-    
     func sortNearestCoursesForLightweightMapItems(courseList: [LightweightMapItem], userCoordinates: (Double, Double)) -> [(LightweightMapItem, Double)] {
         // Guard against default or invalid coordinates
         guard userCoordinates.0 != 0.0 || userCoordinates.1 != 0.0 else { return [] }
@@ -133,8 +103,11 @@ class CoursesViewModel {
                     coordinates: item.coordinates
                 )
             }
-            self.checkIfCoursesInAPI(courseList: self.nearbyRecommendedCourses)
-            print(nearestCourses)
+            
+            Task {
+                await self.checkIfCoursesInAPI(courseList: self.nearbyRecommendedCourses)
+                print(self.nearestCourses)
+            }
         }
     }
     
@@ -150,9 +123,11 @@ class CoursesViewModel {
         }
     }
     
-    func checkIfCoursesInAPI(courseList: [RecommendedNearbyCourse]) {
+    @MainActor
+    func checkIfCoursesInAPI(courseList: [RecommendedNearbyCourse]) async {
         guard !courseList.isEmpty else {
             self.nearestCoursesToDisplay = []
+            self.nearestCourses = []
             self.message = "No nearby courses found"
             return
         }
@@ -160,57 +135,40 @@ class CoursesViewModel {
         isLoading = true
         message = nil
 
-        let group = DispatchGroup()
-        var matches: [Course] = []
+        var pairedResults: [(RecommendedNearbyCourse, Course)] = []
 
         for course in courseList {
-            let query = course.name.trimmingCharacters(in: .whitespacesAndNewlines)
-            print(query)
+            let query = self.normalise(course.name)
+            print("(API query):", query)
             guard !query.isEmpty else { continue }
-
-            group.enter()
-            self.fetchCourses(query: query) { apiResults in
-                if !apiResults.isEmpty {
-                    matches.append(contentsOf: apiResults)
+            try? await Task.sleep(nanoseconds: 500_000_000)
+            let apiResults = await withCheckedContinuation { continuation in
+                self.fetchCourses(query: query) { results in
+                    continuation.resume(returning: results)
                 }
-                group.leave()
+            }
+            if let firstMatch = apiResults.first {
+                pairedResults.append((course, firstMatch))
             }
         }
 
-        group.notify(queue: .main) {
-            self.isLoading = false
-            // Keep raw API results for further use
-            self.golfCourseAPIResults = matches
-
-            // Intersect nearby list with API results by name to preserve distance ordering
-            let apiNames = Set(matches.map { $0.courseName.lowercased() })
-            let filtered = courseList.filter { apiNames.contains($0.name.lowercased()) }
-            let sortedNearby = filtered.sorted { $0.distanceKm < $1.distanceKm }
-            self.nearestCoursesToDisplay = Array(sortedNearby.prefix(5))
-
-            // Map back to Course objects, keeping distance order and limiting to 5
-            var nameToCourse: [String: Course] = [:]
-            for course in matches {
-                let key = course.courseName.lowercased()
-                if nameToCourse[key] == nil {
-                    nameToCourse[key] = course
-                }
-            }
-            var orderedCourses: [Course] = []
-            for item in sortedNearby {
-                let key = item.name.lowercased()
-                if let course = nameToCourse[key] {
-                    orderedCourses.append(course)
-                    if orderedCourses.count == 5 { break }
-                }
-            }
-            self.nearestCourses = orderedCourses
-
-            if self.nearestCourses.isEmpty {
-                self.message = "No matching courses found in API"
-            } else {
-                self.message = nil
-            }
-        }
+        isLoading = false
+        let sorted = pairedResults.sorted { $0.0.distanceKm < $1.0.distanceKm }
+        self.nearestCoursesToDisplay = sorted.prefix(5).map { $0.0 }
+        self.nearestCourses = sorted.prefix(5).map { $0.1 }
+            
+        self.message = self.nearestCourses.isEmpty ? "No matching courses found in API" : nil
+    }
+    
+    func normalise(_ name: String) -> String {
+        let lowercased = name.lowercased()
+        let trimmed = lowercased.trimmingCharacters(in: .whitespacesAndNewlines)
+        let noPunctuation = trimmed.components(separatedBy: .punctuationCharacters).joined()
+        let reduced = noPunctuation.replacingOccurrences(of: "golf club", with: "")
+                                    .replacingOccurrences(of: "golf course", with: "")
+                                    .replacingOccurrences(of: "gc", with: "")
+        let singleSpaced = reduced.replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
+        
+        return singleSpaced.trimmingCharacters(in: .whitespaces)
     }
 }
