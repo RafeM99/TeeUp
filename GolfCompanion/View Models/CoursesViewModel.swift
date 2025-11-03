@@ -20,16 +20,13 @@ class CoursesViewModel {
     var isLoading = false
     var golfCourseAPIResults: [Course] = []
     var nearestCourses: [Course] = []
+    var sortedPairedResults: [(RecommendedNearbyCourse, Course)] = []
     
     func updateLocation() {
         locationDataManager.requestLocation { [weak self] coordinate in
             guard let self else { return }
             self.coordinates = coordinate
             print("User location: \(coordinate.0), \(coordinate.1)")
-//            self.nearestCourses = self.findNearestCourses(
-//                courseList: Course.courseExamples,
-//                userCoordinates: self.coordinates
-//            )
             
             self.fetchNearbyCoursesWithMapKit(userLocation: self.coordinates)
         }
@@ -106,7 +103,7 @@ class CoursesViewModel {
             
             Task {
                 await self.checkIfCoursesInAPI(courseList: self.nearbyRecommendedCourses)
-                print(self.nearestCourses)
+                print(self.nearbyRecommendedCourses)
             }
         }
     }
@@ -153,9 +150,9 @@ class CoursesViewModel {
         }
 
         isLoading = false
-        let sorted = pairedResults.sorted { $0.0.distanceKm < $1.0.distanceKm }
-        self.nearestCoursesToDisplay = sorted.prefix(5).map { $0.0 }
-        self.nearestCourses = sorted.prefix(5).map { $0.1 }
+        sortedPairedResults = pairedResults.sorted { $0.0.distanceKm < $1.0.distanceKm }
+        self.nearestCoursesToDisplay = sortedPairedResults.prefix(5).map { $0.0 }
+        self.nearestCourses = sortedPairedResults.prefix(5).map { $0.1 }
             
         self.message = self.nearestCourses.isEmpty ? "No matching courses found in API" : nil
     }
@@ -167,6 +164,8 @@ class CoursesViewModel {
         let reduced = noPunctuation.replacingOccurrences(of: "golf club", with: "")
                                     .replacingOccurrences(of: "golf course", with: "")
                                     .replacingOccurrences(of: "gc", with: "")
+                                    .replacingOccurrences(of: "golf centre", with: "")
+                                    .replacingOccurrences(of: "pitch", with: "")
         let singleSpaced = reduced.replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
         
         return singleSpaced.trimmingCharacters(in: .whitespaces)

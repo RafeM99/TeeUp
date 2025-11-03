@@ -48,26 +48,24 @@ struct CoursesView: View {
                         Text(message)
                             .foregroundStyle(.secondary)
                     } else if !vm.nearestCourses.isEmpty {
-                        ForEach(vm.nearestCourses) { course in
+                        ForEach(vm.sortedPairedResults, id: \.1.id) { pairedResult in
                             NavigationLink(destination: {
-                                CourseDetailView(course: course)
+                                CourseDetailView(course: pairedResult.1)
                             }, label: {
                                 HStack {
                                     VStack(alignment: .leading, spacing: 2) {
-                                        Text(course.courseName)
+                                        Text(pairedResult.1.courseName)
                                             .font(.headline)
-                                        Text(course.clubName)
+                                        Text(pairedResult.1.clubName)
                                             .font(.subheadline)
                                             .foregroundStyle(.secondary)
                                     }
                                     
                                     Spacer()
-                                        
-                                    if let match = vm.nearestCoursesToDisplay.first(where: { $0.name.lowercased() == course.courseName.lowercased() }) {
-                                        Text("\(match.distanceKm, specifier: "%.1f")km away")
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
-                                    }
+                                    
+                                    Text("\(pairedResult.0.distanceKm, specifier: "%.1f")km away")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
                                 }
                             })
                         }

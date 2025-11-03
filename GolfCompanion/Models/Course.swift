@@ -16,6 +16,7 @@ class Course: Identifiable, @unchecked Sendable, Decodable {
     let location: Location
     let tees: TeeTypes
     var isFavourite: Bool = false
+    var distanceFromUser: Double = 0.0
     
     init(courseId: Int, clubName: String, courseName: String, location: Location, tees: TeeTypes) {
         self.courseId = courseId
