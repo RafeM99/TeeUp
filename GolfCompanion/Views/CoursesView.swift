@@ -6,19 +6,23 @@
 //
 
 import SwiftUI
+import Observation
 
 struct CoursesView: View {
-    @State private var vm: CoursesViewModel = CoursesViewModel()
+    @Environment(CoursesViewModel.self) private var vm
+    
     private let apiManager = CourseAPIManager()
     @State private var query: String = ""
     @State private var isLoading = false
     @State private var isSearchPresented = false
     
     var body: some View {
+        @Bindable var bindableVM = vm
+        
         NavigationStack {
             Form {
                 Section(content: {
-                    List($vm.courses) { $course in
+                    List($bindableVM.courses) { $course in
                         NavigationLink(destination: {
                             CourseDetailView(course: course)
                         }, label: {
@@ -44,10 +48,10 @@ struct CoursesView: View {
                 Section(content: {
                     if vm.isLoading {
                         ProgressView("Finding nearby courses…")
-                    } else if let message = vm.message, vm.nearestCourses.isEmpty {
+                    } else if let message = vm.message, vm.sortedPairedResults.isEmpty {
                         Text(message)
                             .foregroundStyle(.secondary)
-                    } else if !vm.nearestCourses.isEmpty {
+                    } else if !vm.sortedPairedResults.isEmpty {
                         ForEach(vm.sortedPairedResults, id: \.1.id) { pairedResult in
                             NavigationLink(destination: {
                                 CourseDetailView(course: pairedResult.1)
@@ -80,7 +84,6 @@ struct CoursesView: View {
             }
             .navigationTitle("Courses")
             .onAppear(perform: {
-                vm.updateLocation()
                 vm.courses.sort {$0.isFavourite && !$1.isFavourite}
             })
             .searchable(text: $query, isPresented: $isSearchPresented, prompt: "Enter course or club name...")

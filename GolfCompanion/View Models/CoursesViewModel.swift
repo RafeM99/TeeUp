@@ -103,7 +103,6 @@ class CoursesViewModel {
             
             Task {
                 await self.checkIfCoursesInAPI(courseList: self.nearbyRecommendedCourses)
-                print(self.nearbyRecommendedCourses)
             }
         }
     }
@@ -118,6 +117,115 @@ class CoursesViewModel {
                 completion(courses)
             }
         }
+    }
+    
+    // Tokenize a name using the same normalization pipeline but returning tokens
+    private func normalizedTokens(_ name: String) -> [String] {
+        let norm = normalise(name)
+        return norm.split(separator: " ").map { String($0) }
+    }
+
+    // Simple Jaccard similarity over token sets
+    private func jaccardSimilarity(_ a: [String], _ b: [String]) -> Double {
+        let setA = Set(a)
+        let setB = Set(b)
+        if setA.isEmpty && setB.isEmpty { return 1.0 }
+        let intersection = setA.intersection(setB).count
+        let union = setA.union(setB).count
+        return union == 0 ? 0.0 : Double(intersection) / Double(union)
+    }
+    
+    // Extract a human-readable name from Course via reflection
+    private func candidateName(from c: Course) -> String {
+        let mirror = Mirror(reflecting: c)
+        let preferredKeys = ["name", "title", "courseName"]
+        for child in mirror.children {
+            if let label = child.label, preferredKeys.contains(label), let value = child.value as? String {
+                return value
+            }
+        }
+        // Fallback to description
+        return String(describing: c)
+    }
+    
+    // Try to extract latitude/longitude from Course via reflection
+    private func apiCoordinates(from c: Course) -> (Double, Double)? {
+        let mirror = Mirror(reflecting: c)
+
+        // Direct properties on the root
+        var lat: Double? = nil
+        var lon: Double? = nil
+        for child in mirror.children {
+            guard let label = child.label else { continue }
+            switch label.lowercased() {
+            case "latitude", "lat":
+                if let v = child.value as? Double { lat = v }
+                if let v = child.value as? Float { lat = Double(v) }
+                if let v = child.value as? String, let d = Double(v) { lat = d }
+            case "longitude", "lon", "lng":
+                if let v = child.value as? Double { lon = v }
+                if let v = child.value as? Float { lon = Double(v) }
+                if let v = child.value as? String, let d = Double(v) { lon = d }
+            case "coordinate", "coordinates", "location":
+                // Inspect nested structs/dictionaries
+                let nested = Mirror(reflecting: child.value)
+                for n in nested.children {
+                    if let nlabel = n.label?.lowercased() {
+                        if (nlabel == "latitude" || nlabel == "lat"), lat == nil {
+                            if let v = n.value as? Double { lat = v }
+                            if let v = n.value as? Float { lat = Double(v) }
+                            if let v = n.value as? String, let d = Double(v) { lat = d }
+                        }
+                        if (nlabel == "longitude" || nlabel == "lon" || nlabel == "lng"), lon == nil {
+                            if let v = n.value as? Double { lon = v }
+                            if let v = n.value as? Float { lon = Double(v) }
+                            if let v = n.value as? String, let d = Double(v) { lon = d }
+                        }
+                    }
+                }
+            default:
+                break
+            }
+        }
+
+        if let lat = lat, let lon = lon { return (lat, lon) }
+        return nil
+    }
+
+    // Compute a richer similarity: token Jaccard + containment bonuses
+    private func scoreNameSimilarity(targetName: String, candidateName: String) -> Double {
+        let targetTokens = normalizedTokens(targetName)
+        let candidateTokens = normalizedTokens(candidateName)
+        var score = jaccardSimilarity(targetTokens, candidateTokens)
+
+        // Containment bonuses using normalized strings without spaces
+        let targetNorm = normalise(targetName).replacingOccurrences(of: " ", with: "")
+        let candidateNorm = normalise(candidateName).replacingOccurrences(of: " ", with: "")
+
+        if !targetNorm.isEmpty && candidateNorm.contains(targetNorm) { score += 0.35 }
+        if !candidateNorm.isEmpty && targetNorm.contains(candidateNorm) { score += 0.25 }
+
+        // Prefix/suffix light bonuses
+        if candidateNorm.hasPrefix(targetNorm) || targetNorm.hasPrefix(candidateNorm) { score += 0.1 }
+        if candidateNorm.hasSuffix(targetNorm) || targetNorm.hasSuffix(candidateNorm) { score += 0.05 }
+
+        // Clamp to [0, 1]
+        return max(0.0, min(1.0, score))
+    }
+
+    // Choose the best API course match by token similarity to the target name
+    private func bestAPIMatch(for target: RecommendedNearbyCourse, from candidates: [Course]) -> (Course, Double)? {
+        var best: (Course, Double)? = nil
+        for c in candidates {
+            let candName = candidateName(from: c)
+            let sim = scoreNameSimilarity(targetName: target.name, candidateName: candName)
+            if let currentBest = best {
+                if sim > currentBest.1 { best = (c, sim) }
+            } else {
+                best = (c, sim)
+            }
+        }
+        return best
     }
     
     @MainActor
@@ -135,7 +243,10 @@ class CoursesViewModel {
         var pairedResults: [(RecommendedNearbyCourse, Course)] = []
 
         for course in courseList {
-            let query = self.normalise(course.name)
+            let normalized = self.normalise(course.name)
+            let normalizedTokenCount = normalized.split(separator: " ").count
+            let query: String = (normalized.count < 4 || normalizedTokenCount < 2) ? course.name : normalized
+
             print("(API query):", query)
             guard !query.isEmpty else { continue }
             try? await Task.sleep(nanoseconds: 500_000_000)
@@ -144,8 +255,39 @@ class CoursesViewModel {
                     continuation.resume(returning: results)
                 }
             }
-            if let firstMatch = apiResults.first {
-                pairedResults.append((course, firstMatch))
+            if !apiResults.isEmpty {
+                if let (best, score) = self.bestAPIMatch(for: course, from: apiResults) {
+                    let bestName = candidateName(from: best)
+                    let targetNorm = self.normalise(course.name)
+                    let bestNorm = self.normalise(bestName)
+                    let containsStrong = !targetNorm.isEmpty && (bestNorm.contains(targetNorm) || targetNorm.contains(bestNorm))
+                    let threshold = 0.25
+                    if containsStrong || score >= threshold {
+                        var geoAccepted = true
+                        if let apiCoord = self.apiCoordinates(from: best) {
+                            let targetCoord = course.coordinates
+                            let distToTarget = self.calculateDistance(courseLat: apiCoord.0, courseLon: apiCoord.1, userLat: targetCoord.0, userLon: targetCoord.1)
+                            let distToUser = self.calculateDistance(courseLat: apiCoord.0, courseLon: apiCoord.1, userLat: self.coordinates.0, userLon: self.coordinates.1)
+                            // Reject if the API candidate is far from both the MapKit item and the user (likely wrong country)
+                            let maxKmFromTarget = 150.0
+                            let maxKmFromUser = 300.0
+                            if distToTarget > maxKmFromTarget && distToUser > maxKmFromUser {
+                                geoAccepted = false
+                                print("Rejected by geo sanity: best='\(bestName)' distToTarget=\(String(format: "%.1f", distToTarget))km distToUser=\(String(format: "%.1f", distToUser))km")
+                            }
+                        }
+                        if geoAccepted {
+                            pairedResults.append((course, best))
+                            print("Matched '\(course.name)' -> '\(bestName)' with score: \(score))")
+                        } else {
+                            print("No geographically plausible match for: \(course.name). Candidates: \(apiResults.count)")
+                        }
+                    } else {
+                        print("No sufficiently similar match for: \(course.name). Best: \(bestName) score=\(score). Candidates: \(apiResults.count)")
+                    }
+                } else {
+                    print("No candidates to match for: \(course.name)")
+                }
             }
         }
 
@@ -154,20 +296,37 @@ class CoursesViewModel {
         self.nearestCoursesToDisplay = sortedPairedResults.prefix(5).map { $0.0 }
         self.nearestCourses = sortedPairedResults.prefix(5).map { $0.1 }
             
-        self.message = self.nearestCourses.isEmpty ? "No matching courses found in API" : nil
+        self.message = self.nearestCourses.isEmpty ? "No nearby courses found" : nil
     }
     
     func normalise(_ name: String) -> String {
-        let lowercased = name.lowercased()
-        let trimmed = lowercased.trimmingCharacters(in: .whitespacesAndNewlines)
-        let noPunctuation = trimmed.components(separatedBy: .punctuationCharacters).joined()
-        let reduced = noPunctuation.replacingOccurrences(of: "golf club", with: "")
-                                    .replacingOccurrences(of: "golf course", with: "")
-                                    .replacingOccurrences(of: "gc", with: "")
-                                    .replacingOccurrences(of: "golf centre", with: "")
-                                    .replacingOccurrences(of: "pitch", with: "")
-        let singleSpaced = reduced.replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
-        
-        return singleSpaced.trimmingCharacters(in: .whitespaces)
+        // Base lowercase + diacritics folding
+        let original = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        var s = original.lowercased()
+        s = s.folding(options: .diacriticInsensitive, locale: .current)
+        s = s.replacingOccurrences(of: "&", with: " and ")
+
+        // Remove common tokens via word-boundary regex to avoid partial removals
+        let tokensToRemove = [
+            "golf club", "golf course", "golf centre", "golf and leisure", "golf & leisure",
+            "leisure", "club", "centre", "driving range", "academy", "gc", "pitch"
+        ]
+        for token in tokensToRemove {
+            let pattern = "\\b" + NSRegularExpression.escapedPattern(for: token) + "\\b"
+            s = s.replacingOccurrences(of: pattern, with: " ", options: [.regularExpression])
+        }
+
+        // Remove punctuation
+        s = s.components(separatedBy: .punctuationCharacters).joined()
+        // Collapse multiple spaces
+        s = s.replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
+        s = s.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // If the normalized string is too generic, fall back to the original
+        let tokenCount = s.split(separator: " ").count
+        if s.count < 4 || tokenCount < 2 {
+            return original.lowercased()
+        }
+        return s
     }
 }
