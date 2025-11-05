@@ -102,4 +102,5 @@ struct CoursesView: View {
 
 #Preview {
     CoursesView()
+        .environment(CoursesViewModel())
 }

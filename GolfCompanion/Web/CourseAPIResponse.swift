@@ -7,6 +7,6 @@
 
 import Foundation
 
-struct CourseAPIResponse: Decodable {
+struct CourseAPIResponseSearch: Decodable {
     let courses: [Course]
 }

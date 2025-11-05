@@ -34,4 +34,5 @@ struct ContentView: View {
 #Preview {
     ContentView()
         .environment(Bag(clubs: Bag.examples))
+        .environment(CoursesViewModel())
 }
