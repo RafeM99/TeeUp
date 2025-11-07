@@ -2,7 +2,7 @@
 //  CourseScore.swift
 //  GolfCompanion
 //
-//  Created by Rafe Marriott on 07/11/2025.
+//  Created by Marriott, Rafe (NA) on 07/11/2025.
 //
 
 import Foundation
@@ -10,6 +10,6 @@ import Foundation
 struct CourseScore: Identifiable {
     let id = UUID()
     let score: Int
-    let courseId: Int
+    let course: Course
     let date: Date
 }

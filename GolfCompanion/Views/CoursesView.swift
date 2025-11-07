@@ -45,8 +45,24 @@ struct CoursesView: View {
                 })
                 
                 Section(content: {
-                    List(vm.scoresList) { score in
-                        
+                    List(vm.recentScores) { score in
+                        NavigationLink(destination: {
+                            CourseDetailView(course: score.course)
+                        }, label: {
+                            HStack {
+                                Image(systemName: score.course.isFavourite ? "star.fill" : "star")
+                                    .onTapGesture {
+                                        withAnimation {
+                                            score.course.isFavourite.toggle()
+                                            vm.courses.sort {$0.isFavourite && !$1.isFavourite}
+                                        }
+                                    }
+                                    .foregroundColor(.blue)
+                                    .symbolEffect(.bounce, value: score.course.isFavourite)
+                                
+                                Text("\(score.course.courseName)")
+                            }
+                        })
                     }
                 }, header: {
                     Text("Recent rounds")
