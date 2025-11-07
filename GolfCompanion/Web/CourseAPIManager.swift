@@ -94,13 +94,13 @@ class CourseAPIManager {
         .resume()
     }
     
-    func fetchCourseWithID(id: Int, completion: @escaping @Sendable (Course) -> Void) {
+    func fetchCourseWithID(id: Int, completion: @escaping @Sendable (Course?) -> Void) {
         // add query components to header
-        var urlComponents = URLComponents(string: "https://api.golfcourseapi.com/v1/courses/\(id)")
+        let urlComponents = URLComponents(string: "https://api.golfcourseapi.com/v1/courses/\(id)")
         
         guard let url = urlComponents?.url else {
             print("Invalid URL components")
-            DispatchQueue.main.async { completion([]) }
+            DispatchQueue.main.async { completion(nil) }
             return
         }
         
@@ -128,13 +128,13 @@ class CourseAPIManager {
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 print("Network error: \(error.localizedDescription)")
-                DispatchQueue.main.async { completion([]) }
+                DispatchQueue.main.async { completion(nil) }
                 return
             }
 
             guard let httpResponse = response as? HTTPURLResponse else {
                 print("No HTTPURLResponse")
-                DispatchQueue.main.async { completion([]) }
+                DispatchQueue.main.async { completion(nil) }
                 return
             }
             
@@ -147,13 +147,13 @@ class CourseAPIManager {
                 if let data = data, let body = String(data: data, encoding: .utf8) {
                     print("Response body: \(body)")
                 }
-                DispatchQueue.main.async { completion([]) }
+                DispatchQueue.main.async { completion(nil) }
                 return
             }
 
             guard let data = data else {
                 print("No data returned")
-                DispatchQueue.main.async { completion([]) }
+                DispatchQueue.main.async { completion(nil) }
                 return
             }
 
@@ -165,7 +165,7 @@ class CourseAPIManager {
                 if let body = String(data: data, encoding: .utf8) {
                     print("Raw body: \(body)")
                 }
-                DispatchQueue.main.async { completion([]) }
+                DispatchQueue.main.async { completion(nil) }
             }
         }
         .resume()

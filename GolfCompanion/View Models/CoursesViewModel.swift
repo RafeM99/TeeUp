@@ -21,6 +21,7 @@ class CoursesViewModel {
     var golfCourseAPIResults: [Course] = []
     var nearestCourses: [Course] = []
     var sortedPairedResults: [(RecommendedNearbyCourse, Course)] = []
+    var scoresList: [CourseScore] = [CourseScore(score: 75, courseId: 7118, date: Date().addingTimeInterval(10000)), CourseScore(score: 80, courseId: 24636, date: Date().addingTimeInterval(50000))]
     
     func updateLocation() {
         locationDataManager.requestLocation { [weak self] coordinate in

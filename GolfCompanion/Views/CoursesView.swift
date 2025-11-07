@@ -42,7 +42,14 @@ struct CoursesView: View {
                         })
                     }
                 }, header: {
-                    
+                })
+                
+                Section(content: {
+                    List(vm.scoresList) { score in
+                        
+                    }
+                }, header: {
+                    Text("Recent rounds")
                 })
                 
                 Section(content: {
