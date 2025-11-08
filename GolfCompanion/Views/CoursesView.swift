@@ -61,6 +61,14 @@ struct CoursesView: View {
                                     .symbolEffect(.bounce, value: score.course.isFavourite)
                                 
                                 Text("\(score.course.courseName)")
+                                
+                                Text("\(score.score)")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                
+                                Text("\(score.date)")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
                             }
                         })
                     }

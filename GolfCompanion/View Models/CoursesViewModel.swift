@@ -24,7 +24,6 @@ class CoursesViewModel {
     var scoresList: [CourseIDScore] = [CourseIDScore(score: 75, courseId: 7118, date: Date().addingTimeInterval(10000)), CourseIDScore(score: 80, courseId: 24636, date: Date().addingTimeInterval(50000))]
     var isLoadingID = false
     var messageID: String? = nil
-    var returnedCourseFromAPI: Course? = nil
     var recentScores: [CourseScore] = []
     
     func updateLocation() {
@@ -335,22 +334,25 @@ class CoursesViewModel {
         return s
     }
     
-    func fetchCourseWithID(id: Int) {
+    func fetchCourseWithID(id: Int) async -> Course? {
         let apiManager = CourseAPIManager()
-        
-        guard !(id == 0) else { return }
+        guard id != 0 else { return nil }
 
         isLoadingID = true
         messageID = nil
 
-        apiManager.fetchCourseWithID(id: id) { course in
-            Task { @MainActor in
-                self.isLoadingID = false
-                self.returnedCourseFromAPI = course
-                if course == nil {
-                    self.messageID = "Course not found"
+        let course: Course? = await withCheckedContinuation { continuation in
+            apiManager.fetchCourseWithID(id: id) { course in
+                Task { @MainActor in
+                    self.isLoadingID = false
+                    if course == nil {
+                        self.messageID = "Course not found"
+                    }
+                    continuation.resume(returning: course)
                 }
             }
         }
+
+        return course
     }
 }

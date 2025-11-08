@@ -21,17 +21,19 @@ struct GolfCompanionApp: App {
         }
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
-                coursesVM.updateLocation()
-                
-                for score in coursesVM.scoresList {
-                    coursesVM.fetchCourseWithID(id: score.courseId)
-                    if coursesVM.returnedCourseFromAPI != nil {
-                        coursesVM.recentScores.append(CourseScore(score: score.score, course: coursesVM.returnedCourseFromAPI!, date: score.date))
-                    } else {
-                        print("No course found")
+                Task { @MainActor in
+                    coursesVM.updateLocation()
+
+                    coursesVM.recentScores.removeAll()
+                    for score in coursesVM.scoresList {
+                        if let course = await coursesVM.fetchCourseWithID(id: score.courseId) {
+                            coursesVM.recentScores.append(
+                                CourseScore(score: score.score, course: course, date: score.date)
+                            )
+                        } else {
+                            print("No course found")
+                        }
                     }
-                    
-                    coursesVM.returnedCourseFromAPI = nil
                 }
             }
         }
