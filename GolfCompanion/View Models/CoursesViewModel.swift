@@ -25,6 +25,7 @@ class CoursesViewModel {
     var isLoadingID = false
     var messageID: String? = nil
     var recentScores: [CourseScore] = []
+    let calendar = Calendar.current
     
     func updateLocation() {
         locationDataManager.requestLocation { [weak self] coordinate in
@@ -354,5 +355,11 @@ class CoursesViewModel {
         }
 
         return course
+    }
+    
+    func getTimeSinceRound(date: Date) {
+        let dayInterval = calendar.dateComponents([.day], from: date, to: Date.now)
+        let interval = ""
+        
     }
 }
