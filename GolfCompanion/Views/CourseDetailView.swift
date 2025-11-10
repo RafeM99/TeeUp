@@ -8,7 +8,10 @@
 import SwiftUI
 
 struct CourseDetailView: View {
+    @Environment(CoursesViewModel.self) private var vm
+    
     @State var course: Course
+    @State var rounds: [CourseIDScore] = []
     
     var body: some View {
         NavigationStack {
@@ -21,6 +24,28 @@ struct CourseDetailView: View {
                     Text(course.location.displayText)
                 }, header: {
                     Text("Address")
+                })
+                
+                Section(content: {
+                    ForEach(rounds) { round in
+                        HStack {
+                            Text(round.teeName)
+                            
+                            Spacer()
+                            
+                            Text("\(round.score)")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            
+                            Spacer()
+                            
+                            Text(vm.getTimeSinceRound(date: round.date))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }, header: {
+                    Text("Previous rounds")
                 })
                 
                 if let maleTees = course.tees.male, !maleTees.isEmpty {
@@ -73,6 +98,17 @@ struct CourseDetailView: View {
                     })
                     .symbolEffect(.bounce, value: course.isFavourite)
                 }
+            }
+            .onAppear(perform: {
+                searchForRounds(id: course.courseId)
+            })
+        }
+    }
+    
+    func searchForRounds(id: Int) {
+        for score in vm.scoresList {
+            if id == score.courseId {
+                rounds.append(score)
             }
         }
     }
@@ -134,4 +170,5 @@ struct CourseDetailView: View {
             ]
         )
     ))
+    .environment(CoursesViewModel())
 }
