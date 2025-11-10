@@ -35,7 +35,7 @@ struct RoundSummaryView: View {
                         
                         Text(getParComparison(userTotal: totalScore, teeTotal: tee.parTotal))
                             .font(.system(size: 36, weight: .bold))
-                            .foregroundColor(parColor(userTotal: totalScore, teeTotal: tee.parTotal))
+                            .foregroundColor(parColour(userTotal: totalScore, teeTotal: tee.parTotal))
                             .padding(12)
                             .background(
                                 RoundedRectangle(cornerRadius: 10)
@@ -82,7 +82,7 @@ struct RoundSummaryView: View {
         }
     }
     
-    func parColor(userTotal: Int, teeTotal: Int) -> Color {
+    func parColour(userTotal: Int, teeTotal: Int) -> Color {
         let diff = userTotal - teeTotal
         if diff == 0 {
             return .gray

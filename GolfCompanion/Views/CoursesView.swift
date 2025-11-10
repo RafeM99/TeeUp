@@ -62,11 +62,15 @@ struct CoursesView: View {
                                 
                                 Text("\(score.course.courseName)")
                                 
+                                Spacer()
+                                
                                 Text("\(score.score)")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                                 
-                                Text("\(score.date)")
+                                Spacer()
+                                
+                                Text(vm.getTimeSinceRound(date: score.date))
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }

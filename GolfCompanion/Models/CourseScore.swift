@@ -12,4 +12,5 @@ struct CourseScore: Identifiable {
     let score: Int
     let course: Course
     let date: Date
+    let teeName: String
 }

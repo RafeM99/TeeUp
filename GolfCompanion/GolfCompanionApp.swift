@@ -22,13 +22,12 @@ struct GolfCompanionApp: App {
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
                 Task { @MainActor in
-//                    coursesVM.updateLocation()
+                    coursesVM.updateLocation()
 
                     coursesVM.recentScores.removeAll()
                     for score in coursesVM.scoresList {
                         if let course = await coursesVM.fetchCourseWithID(id: score.courseId) {
-                            coursesVM.recentScores.append(CourseScore(score: score.score, course: course, date: score.date))
-                            coursesVM.getTimeSinceRound(date: score.date)
+                            coursesVM.recentScores.append(CourseScore(score: score.score, course: course, date: score.date, teeName: score.teeName))
                         } else {
                             print("No course found")
                         }
