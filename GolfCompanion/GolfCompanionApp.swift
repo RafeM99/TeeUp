@@ -32,6 +32,7 @@ struct GolfCompanionApp: App {
                             print("No course found")
                         }
                     }
+                    coursesVM.filterRecentScores()
                 }
             }
         }

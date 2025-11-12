@@ -21,11 +21,12 @@ class CoursesViewModel {
     var golfCourseAPIResults: [Course] = []
     var nearestCourses: [Course] = []
     var sortedPairedResults: [(RecommendedNearbyCourse, Course)] = []
-    var scoresList: [CourseIDScore] = [CourseIDScore(score: 75, courseId: 12605, date: Calendar.current.date(from: DateComponents(year: 2024, month: 12, day: 2))!, teeName: "Yellow"), CourseIDScore(score: 80, courseId: 24636, date: Calendar.current.date(from: DateComponents(year: 2023, month: 9, day: 15))!, teeName: "White")]
+    var scoresList: [CourseIDScore] = [CourseIDScore(score: 75, courseId: 12605, date: Calendar.current.date(from: DateComponents(year: 2024, month: 12, day: 2))!, teeName: "Yellow"), CourseIDScore(score: 80, courseId: 24636, date: Calendar.current.date(from: DateComponents(year: 2023, month: 9, day: 15))!, teeName: "White"), CourseIDScore(score: 80, courseId: 24636, date: Calendar.current.date(from: DateComponents(year: 2023, month: 9, day: 15))!, teeName: "White"), CourseIDScore(score: 80, courseId: 24636, date: Calendar.current.date(from: DateComponents(year: 2023, month: 9, day: 15))!, teeName: "White"), CourseIDScore(score: 80, courseId: 24636, date: Calendar.current.date(from: DateComponents(year: 2023, month: 9, day: 15))!, teeName: "White"), CourseIDScore(score: 80, courseId: 24636, date: Calendar.current.date(from: DateComponents(year: 2023, month: 9, day: 15))!, teeName: "White")]
     var isLoadingID = false
     var messageID: String? = nil
     var recentScores: [CourseScore] = []
     let calendar = Calendar.current
+    var favouritedIDs: [Int] = [12605]
     
     func updateLocation() {
         locationDataManager.requestLocation { [weak self] coordinate in
@@ -299,7 +300,13 @@ class CoursesViewModel {
         isLoading = false
         sortedPairedResults = pairedResults.sorted { $0.0.distanceKm < $1.0.distanceKm }
         self.nearestCoursesToDisplay = sortedPairedResults.prefix(5).map { $0.0 }
-        self.nearestCourses = sortedPairedResults.prefix(5).map { $0.1 }
+        self.nearestCourses = sortedPairedResults.prefix(5).map { (recommendedNearbyCourse, apiCourse) in
+            let newCourse = apiCourse
+            if favouritedIDs.contains(newCourse.courseId) {
+                newCourse.isFavourite = true
+            }
+            return newCourse
+        }
             
         self.message = self.nearestCourses.isEmpty ? "No nearby courses found" : nil
     }
@@ -342,7 +349,7 @@ class CoursesViewModel {
         isLoadingID = true
         messageID = nil
 
-        let course: Course? = await withCheckedContinuation { continuation in
+        let fetched: Course? = await withCheckedContinuation { continuation in
             apiManager.fetchCourseWithID(id: id) { course in
                 Task { @MainActor in
                     self.isLoadingID = false
@@ -353,8 +360,15 @@ class CoursesViewModel {
                 }
             }
         }
-
-        return course
+        
+        if let newCourse = fetched {
+            if favouritedIDs.contains(newCourse.courseId) {
+                newCourse.isFavourite = true
+            }
+            return newCourse
+        } else {
+            return nil
+        }
     }
     
     func getTimeSinceRound(date: Date) -> String {
@@ -372,5 +386,10 @@ class CoursesViewModel {
         }
         
         return intervalString
+    }
+    
+    func filterRecentScores() {
+        recentScores.sort { $0.date > $1.date }
+        recentScores = Array(recentScores.prefix(5))
     }
 }

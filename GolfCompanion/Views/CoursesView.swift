@@ -22,29 +22,6 @@ struct CoursesView: View {
         NavigationStack {
             Form {
                 Section(content: {
-                    List($bindableVM.courses) { $course in
-                        NavigationLink(destination: {
-                            CourseDetailView(course: course)
-                        }, label: {
-                            HStack {
-                                Image(systemName: course.isFavourite ? "star.fill" : "star")
-                                    .onTapGesture {
-                                        withAnimation {
-                                            course.isFavourite.toggle()
-                                            vm.courses.sort {$0.isFavourite && !$1.isFavourite}
-                                        }
-                                    }
-                                    .foregroundColor(.blue)
-                                    .symbolEffect(.bounce, value: course.isFavourite)
-                                
-                                Text("\(course.courseName)")
-                            }
-                        })
-                    }
-                }, header: {
-                })
-                
-                Section(content: {
                     List(vm.recentScores) { score in
                         NavigationLink(destination: {
                             CourseDetailView(course: score.course)
@@ -54,7 +31,7 @@ struct CoursesView: View {
                                     .onTapGesture {
                                         withAnimation {
                                             score.course.isFavourite.toggle()
-                                            vm.courses.sort {$0.isFavourite && !$1.isFavourite}
+                                            vm.recentScores.sort {$0.course.isFavourite && !$1.course.isFavourite}
                                         }
                                     }
                                     .foregroundColor(.blue)
