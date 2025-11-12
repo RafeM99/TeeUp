@@ -120,7 +120,14 @@ class CoursesViewModel {
 
         apiManager.searchCourses(query: trimmed) { courses in
             Task { @MainActor in
-                completion(courses)
+                let updatedCourses = courses
+                for i in 0..<updatedCourses.count {
+                    if self.favouritedIDs.contains(updatedCourses[i].courseId) {
+                        updatedCourses[i].isFavourite = true
+                    }
+                }
+
+                completion(updatedCourses)
             }
         }
     }
@@ -142,16 +149,16 @@ class CoursesViewModel {
     }
     
     // Extract a human-readable name from Course via reflection
-    private func candidateName(from c: Course) -> String {
-        let mirror = Mirror(reflecting: c)
-        let preferredKeys = ["name", "title", "courseName"]
+    private func candidateName(from course: Course) -> String {
+        let mirror = Mirror(reflecting: course)
+        let preferredKeys = ["clubName", "club", "name", "title", "courseName"]
         for child in mirror.children {
             if let label = child.label, preferredKeys.contains(label), let value = child.value as? String {
                 return value
             }
         }
         // Fallback to description
-        return String(describing: c)
+        return String(describing: course)
     }
     
     // Try to extract latitude/longitude from Course via reflection

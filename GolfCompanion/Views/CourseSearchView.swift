@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct CourseSearchView: View {
+    @Environment(CoursesViewModel.self) private var vm
+    
     @Binding var query: String
     @Binding var isLoading: Bool
     
@@ -103,8 +105,16 @@ struct CourseSearchView: View {
         apiManager.searchCourses(query: trimmed) { courses in
             Task { @MainActor in
                 self.isLoading = false
+                
+                let updatedCourses = courses
+                for i in 0..<updatedCourses.count {
+                    if vm.favouritedIDs.contains(updatedCourses[i].courseId) {
+                        updatedCourses[i].isFavourite = true
+                    }
+                }
+                
                 self.courses = courses
-                if courses.isEmpty {
+                if updatedCourses.isEmpty {
                     self.message = "No results"
                 }
             }

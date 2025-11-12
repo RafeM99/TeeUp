@@ -93,6 +93,12 @@ struct CourseDetailView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: {
                         course.isFavourite.toggle()
+                        
+                        if course.isFavourite == true {
+                            vm.favouritedIDs.append(course.courseId)
+                        } else {
+                            vm.favouritedIDs.removeAll { $0 == course.courseId }
+                        }
                     }, label: {
                         Image(systemName: course.isFavourite ? "star.fill" : "star")
                     })

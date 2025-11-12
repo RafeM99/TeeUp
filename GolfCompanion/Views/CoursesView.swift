@@ -31,7 +31,14 @@ struct CoursesView: View {
                                     .onTapGesture {
                                         withAnimation {
                                             score.course.isFavourite.toggle()
-                                            vm.recentScores.sort {$0.course.isFavourite && !$1.course.isFavourite}
+
+                                            if score.course.isFavourite == true {
+                                                vm.favouritedIDs.append(score.course.courseId)
+                                            } else {
+                                                vm.favouritedIDs.removeAll { $0 == score.course.courseId }
+                                            }
+
+                                            vm.recentScores.sort { $0.course.isFavourite && !$1.course.isFavourite }
                                         }
                                     }
                                     .foregroundColor(.blue)
