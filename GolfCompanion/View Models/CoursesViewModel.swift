@@ -18,7 +18,6 @@ class CoursesViewModel {
     var nearbyRecommendedCourses: [RecommendedNearbyCourse] = []
     var message: String? = nil
     var isLoading = false
-    var golfCourseAPIResults: [Course] = []
     var nearestCourses: [Course] = []
     var sortedPairedResults: [(RecommendedNearbyCourse, Course)] = []
     var scoresList: [CourseIDScore] = [CourseIDScore(score: 75, courseId: 12605, date: Calendar.current.date(from: DateComponents(year: 2024, month: 12, day: 2))!, teeName: "Yellow"), CourseIDScore(score: 80, courseId: 24636, date: Calendar.current.date(from: DateComponents(year: 2023, month: 9, day: 15))!, teeName: "White"), CourseIDScore(score: 80, courseId: 24636, date: Calendar.current.date(from: DateComponents(year: 2023, month: 9, day: 15))!, teeName: "White"), CourseIDScore(score: 80, courseId: 24636, date: Calendar.current.date(from: DateComponents(year: 2023, month: 9, day: 15))!, teeName: "White"), CourseIDScore(score: 80, courseId: 24636, date: Calendar.current.date(from: DateComponents(year: 2023, month: 9, day: 15))!, teeName: "White"), CourseIDScore(score: 80, courseId: 24636, date: Calendar.current.date(from: DateComponents(year: 2023, month: 9, day: 15))!, teeName: "White")]
@@ -398,5 +397,18 @@ class CoursesViewModel {
     func filterRecentScores() {
         recentScores.sort { $0.date > $1.date }
         recentScores = Array(recentScores.prefix(5))
+    }
+    
+    func isCourseAlreadyStored(course: Course) -> Bool {
+        var isAlreadyStored: Bool = false
+        
+        for i in 0..<(self.scoresList.count) {
+            if self.scoresList[i].courseId == course.courseId {
+                isAlreadyStored = true
+                break
+            }
+        }
+        
+        return isAlreadyStored
     }
 }
