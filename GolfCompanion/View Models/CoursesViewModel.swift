@@ -228,15 +228,19 @@ class CoursesViewModel {
     // Choose the best API course match by token similarity to the target name
     private func bestAPIMatch(for target: RecommendedNearbyCourse, from candidates: [Course]) -> (Course, Double)? {
         var best: (Course, Double)? = nil
-        for c in candidates {
-            let candName = candidateName(from: c)
+        for candidate in candidates {
+            let candName = candidateName(from: candidate)
             let sim = scoreNameSimilarity(targetName: target.name, candidateName: candName)
             if let currentBest = best {
-                if sim > currentBest.1 { best = (c, sim) }
+                if sim > currentBest.1 { best = (candidate, sim) }
             } else {
-                best = (c, sim)
+                best = (candidate, sim)
             }
         }
+        
+        let bestClubName = best?.0.clubName
+        
+        
         return best
     }
     
@@ -289,8 +293,13 @@ class CoursesViewModel {
                             }
                         }
                         if geoAccepted {
-                            pairedResults.append((course, best))
-                            print("Matched '\(course.name)' -> '\(bestName)' with score: \(score))")
+                            if !isCourseAlreadyStored(course: best) {
+                                pairedResults.append((course, best))
+                                print("Matched '\(course.name)' -> '\(bestName)' with score: \(score))")
+                            } else {
+                                print("Course has already been played on")
+                            }
+                            
                         } else {
                             print("No geographically plausible match for: \(course.name). Candidates: \(apiResults.count)")
                         }
@@ -327,7 +336,7 @@ class CoursesViewModel {
         // Remove common tokens via word-boundary regex to avoid partial removals
         let tokensToRemove = [
             "golf club", "golf course", "golf centre", "golf and leisure", "golf & leisure",
-            "leisure", "club", "centre", "driving range", "academy", "gc", "pitch"
+            "leisure", "club", "centre", "driving range", "academy", "gc", "pitch", "golf links", "links", "golf"
         ]
         for token in tokensToRemove {
             let pattern = "\\b" + NSRegularExpression.escapedPattern(for: token) + "\\b"
