@@ -22,8 +22,6 @@ struct GolfCompanionApp: App {
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
                 Task { @MainActor in
-                    coursesVM.updateLocation()
-
                     coursesVM.recentScores.removeAll()
                     for score in coursesVM.scoresList {
                         if let course = await coursesVM.fetchCourseWithID(id: score.courseId) {
@@ -33,6 +31,8 @@ struct GolfCompanionApp: App {
                         }
                     }
                     coursesVM.filterRecentScores()
+                    
+                    coursesVM.updateLocation()
                 }
             }
         }

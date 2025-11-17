@@ -238,9 +238,6 @@ class CoursesViewModel {
             }
         }
         
-        let bestClubName = best?.0.clubName
-        
-        
         return best
     }
     
@@ -293,13 +290,13 @@ class CoursesViewModel {
                             }
                         }
                         if geoAccepted {
-                            if !isCourseAlreadyStored(course: best) {
-                                pairedResults.append((course, best))
-                                print("Matched '\(course.name)' -> '\(bestName)' with score: \(score))")
-                            } else {
-                                print("Course has already been played on")
+                            let clubName = best.clubName
+                            let allFromSameClub = apiResults.filter { $0.clubName == clubName }
+                            for clubCourse in allFromSameClub {
+                                if !isCourseAlreadyStored(course: clubCourse) {
+                                    pairedResults.append((course, clubCourse))
+                                }
                             }
-                            
                         } else {
                             print("No geographically plausible match for: \(course.name). Candidates: \(apiResults.count)")
                         }
