@@ -8,12 +8,14 @@
 import SwiftUI
 
 struct AddScoreView: View {
-    @Binding var scores: [(String, String, Int)]
+    @Environment(CoursesViewModel.self) private var vm
+    
     @Binding var course: Course
     @Binding var isShowing: Bool
     
     @State var newScore: Double = 0.0
     @State var newTee: Tee?
+    @State var newDate: Date = Date.now
     
     var body: some View {
         List {
@@ -56,13 +58,15 @@ struct AddScoreView: View {
                 })
             }
             
+            DatePicker("Round date", selection: $newDate, displayedComponents: [.date])
+            
             HStack {
                 Spacer()
                 
                 Button(action: {
                     guard let tee = newTee else { return }
-                    let newScore = (course.courseName, tee.teeName, Int(newScore))
-                    scores.append(newScore)
+                    let newScore = CourseIDScore(score: Int(newScore), courseId: course.courseId, date: newDate, teeName: tee.teeName)
+                    vm.scoresList.append(newScore)
                     isShowing = false
                 }, label: {
                     Text("Add Score")
@@ -72,7 +76,7 @@ struct AddScoreView: View {
                 Spacer()
             }
         }
-        .presentationDetents([.fraction(0.3)])
+        .presentationDetents([.fraction(0.4)])
         .onAppear {
             // Set initial tee selection
             if newTee == nil {

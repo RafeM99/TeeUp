@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct RoundView: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(CoursesViewModel.self) private var vm
+    
     @Binding var course: Course
     @Binding var tee: Tee
-    @Binding var courseScores: [(String, String, Int)]
     @Binding var roundScores: [Int]
     @Binding var showingRoundSummary: Bool
-    
-    @Environment(\.dismiss) private var dismiss
     
     @State private var holeNumber: Int = 1
     @State private var showingAlert: Bool = false
@@ -218,7 +218,7 @@ struct RoundView: View {
                 if holeNumber >= tee.holes.count {
                     pendingScore = nil
                     
-                    courseScores.append((course.courseName, tee.teeName, totalScore))
+                    vm.scoresList.append(CourseIDScore(score: totalScore, courseId: course.courseId, date: Date.now, teeName: tee.teeName))
                     
                     showingRoundSummary = true
                     dismiss()

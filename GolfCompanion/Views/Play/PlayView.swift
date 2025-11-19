@@ -8,14 +8,19 @@
 import SwiftUI
 
 struct PlayView: View {
+    @Environment(CoursesViewModel.self) private var vm
+    
     @State private var displayedCourse: Course = Course.courseExamples.first!
-    @State private var scores: [(String, String, Int)] = []
+    @State private var selectedCourseScores: [CourseIDScore] = []
     @State private var isShowingSheet: Bool = false
     @State private var startRound = false
     @State private var tee: Tee? = nil
     @State var showingAlert: Bool = false
     @State var roundScores: [Int] = []
     @State var showingRoundSummary: Bool = false
+    @State private var query: String = ""
+    @State private var isLoading = false
+    @State private var isSearchPresented = false
     
     var body: some View {
         NavigationStack {
@@ -27,8 +32,8 @@ struct PlayView: View {
                         Text("Course details")
                     })
                     
-                    if let best = findLowestScore(scores: scores) {
-                        Text("Best score: \(best.2) - \(best.1)")
+                    if let best = findLowestScore(scores: selectedCourseScores) {
+                        Text("Best score: \(best.score) - \(best.teeName)")
                     } else {
                         Text("Best score: N/A")
                     }
@@ -97,11 +102,11 @@ struct PlayView: View {
             .sheet(isPresented: $isShowingSheet, onDismiss: {
                 isShowingSheet = false
             }, content: {
-                AddScoreView(scores: $scores, course: $displayedCourse, isShowing: $isShowingSheet)
+                AddScoreView(course: $displayedCourse, isShowing: $isShowingSheet)
             })
             .navigationDestination(isPresented: $startRound) {
                 if let tee {
-                    RoundView(course: $displayedCourse, tee: Binding(get: { tee }, set: { self.tee = $0 }), courseScores: $scores, roundScores: $roundScores, showingRoundSummary: $showingRoundSummary)
+                    RoundView(course: $displayedCourse, tee: Binding(get: { tee }, set: { self.tee = $0 }), roundScores: $roundScores, showingRoundSummary: $showingRoundSummary)
                 }
             }
             .alert("No tee selected", isPresented: $showingAlert) {
@@ -116,16 +121,39 @@ struct PlayView: View {
                     }
                 }
             })
+            .searchable(text: $query, isPresented: $isSearchPresented, prompt: "Enter course or club name...")
+            .overlay(alignment: .center) {
+                if isSearchPresented {
+                    PlaySearchView(query: $query, isLoading: $isLoading, selectedCourse: $displayedCourse, isPresented: $isSearchPresented)
+                        .transition(.opacity)
+                }
+            }
+            .onAppear {
+                selectedCourseScores = findScoresForSelectedCourse(id: displayedCourse.courseId)
+            }
         }
     }
     
-    func findLowestScore(scores: [(String, String, Int)]) -> (String, String, Int)? {
-        let best = scores.min(by: { $0.2 < $1.2 })
+    func findLowestScore(scores: [CourseIDScore]) -> CourseIDScore? {
+        let best = scores.min(by: { $0.score < $1.score })
         return best
+    }
+    
+    func findScoresForSelectedCourse(id: Int) -> [CourseIDScore] {
+        var scores: [CourseIDScore] = []
+        
+        for score in vm.scoresList {
+            if score.courseId == id {
+                scores.append(score)
+            }
+        }
+        
+        return scores
     }
 }
 
 #Preview {
     PlayView()
         .environment(Bag(clubs: Bag.examples))
+        .environment(CoursesViewModel())
 }
