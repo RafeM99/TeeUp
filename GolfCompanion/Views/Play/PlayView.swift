@@ -10,8 +10,10 @@ import SwiftUI
 struct PlayView: View {
     @Environment(CoursesViewModel.self) private var vm
     
-    @State private var displayedCourse: Course = Course.courseExamples.first!
-    @State private var selectedCourseScores: [CourseIDScore] = []
+    @State private var displayedCourse: Course? = nil
+    private var selectedCourseScores: [CourseIDScore] {
+        vm.scoresList.filter { $0.courseId == displayedCourse.courseId }
+    }
     @State private var isShowingSheet: Bool = false
     @State private var startRound = false
     @State private var tee: Tee? = nil
@@ -129,7 +131,13 @@ struct PlayView: View {
                 }
             }
             .onAppear {
-                selectedCourseScores = findScoresForSelectedCourse(id: displayedCourse.courseId)
+                Task {
+                    if vm.scoresList.isEmpty {
+                        displayedCourse = await vm.fetchCourseWithID(id: 12578)
+                    } else {
+                        displayedCourse = await vm.fetchCourseWithID(id: vm.recentScores.first.course.courseId)
+                    }
+                }
             }
         }
     }
