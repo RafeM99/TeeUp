@@ -30,10 +30,11 @@ struct GolfCompanionApp: App {
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
                 Task { @MainActor in
-                    if let firstRecent = coursesVM.recentScores.first {
-                        playVM.displayedCourse = firstRecent.course
-                    } else if let sunningdale = await coursesVM.fetchCourseWithID(id: 12578) {
-                        playVM.displayedCourse = sunningdale
+                    if coursesVM.scoresList.isEmpty {
+                        playVM.displayedCourse = await coursesVM.fetchCourseWithID(id: 12578)
+                    } else if let recent = coursesVM.recentScores.first?.course.courseId,
+                        let fetched = await coursesVM.fetchCourseWithID(id: recent) {
+                            playVM.displayedCourse = fetched
                     }
                     
                     coursesVM.recentScores.removeAll()

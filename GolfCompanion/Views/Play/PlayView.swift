@@ -130,23 +130,8 @@ struct PlayView: View {
             .searchable(text: $bindableVM.query, isPresented: $bindableVM.isSearchPresented, prompt: "Enter course or club name...")
             .overlay(alignment: .center) {
                 if vm.isSearchPresented, let _ = vm.displayedCourse {
-                    PlaySearchView(
-                        query: $bindableVM.query,
-                        isLoading: $bindableVM.isLoading,
-                        selectedCourse: Binding(get: { vm.displayedCourse! }, set: { vm.displayedCourse = $0 }),
-                        isPresented: $bindableVM.isSearchPresented
-                    )
+                    PlaySearchView(query: $bindableVM.query, isLoading: $bindableVM.isLoading, selectedCourse: Binding(get: { vm.displayedCourse! }, set: { vm.displayedCourse = $0 }), isPresented: $bindableVM.isSearchPresented)
                     .transition(.opacity)
-                }
-            }
-            .onAppear {
-                Task {
-                    if coursesVM.scoresList.isEmpty {
-                        vm.displayedCourse = await coursesVM.fetchCourseWithID(id: 12578)
-                    } else if let recent = coursesVM.recentScores.first?.course.courseId,
-                              let fetched = await coursesVM.fetchCourseWithID(id: recent) {
-                        vm.displayedCourse = fetched
-                    }
                 }
             }
         }
@@ -157,4 +142,5 @@ struct PlayView: View {
     PlayView()
         .environment(Bag(clubs: Bag.examples))
         .environment(CoursesViewModel())
+        .environment(PlayViewModel(coursesVM: CoursesViewModel()))
 }

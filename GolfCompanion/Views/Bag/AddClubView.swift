@@ -11,12 +11,6 @@ struct AddClubView: View {
     @Binding var clubs: [Club]
     @Binding var isShowing: Bool
     
-    @State var newType: ClubType = .driver
-    @State var newBrand: String = ""
-    @State var newIsLeft: Bool = false
-    @State var newDistance: Double = 150
-    @State var showingAlert: Bool = false
-    
     var body: some View {
         List {
             TextField("Brand", text: $newBrand)

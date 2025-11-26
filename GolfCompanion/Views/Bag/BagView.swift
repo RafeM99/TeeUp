@@ -11,7 +11,7 @@ import Observation
 struct BagView: View {
     @Environment(Bag.self) private var bag
     
-    @State private var isShowingSheet: Bool = false
+    @State private var vm = BagViewModel()
     
     var body: some View {
         NavigationStack {
@@ -33,7 +33,7 @@ struct BagView: View {
                 })
                 .swipeActions(edge: .trailing) {
                     Button(role: .destructive) {
-                        deleteClub(club)
+                        vm.deleteClub(club, from: bag)
                     } label: {
                         Label("Delete", systemImage: "trash")
                     }
@@ -43,24 +43,20 @@ struct BagView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: {
-                        isShowingSheet = true
+                        vm.isShowingSheet = true
                     }, label: {
                         Image(systemName: "plus")
                             .fontWeight(.bold)
                     })
                 }
             }
-            .sheet(isPresented: $isShowingSheet, onDismiss: {
-                isShowingSheet = false
+            .sheet(isPresented: $vm.isShowingSheet, onDismiss: {
+                vm.isShowingSheet = false
             }, content: {
                 @Bindable var bag = bag
-                AddClubView(clubs: $bag.clubs, isShowing: $isShowingSheet)
+                AddClubView(clubs: $bag.clubs, isShowing: $vm.isShowingSheet)
             })
         }
-    }
-    func deleteClub(_ club: Club) {
-        bag.clubs.removeAll{$0.id == club.id}
-        bag.clubs.sort{$0.distance > $1.distance}
     }
 }
 
