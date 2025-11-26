@@ -8,48 +8,47 @@
 import SwiftUI
 
 struct PlayView: View {
-    @Environment(CoursesViewModel.self) private var vm
+    @Environment(CoursesViewModel.self) private var coursesVM
+    @Environment(PlayViewModel.self) private var vm
     
-    @State private var displayedCourse: Course? = nil
     private var selectedCourseScores: [CourseIDScore] {
-        vm.scoresList.filter { $0.courseId == displayedCourse.courseId }
+        guard let courseId = vm.displayedCourse?.courseId else { return [] }
+        return coursesVM.scoresList.filter { $0.courseId == courseId }
     }
-    @State private var isShowingSheet: Bool = false
-    @State private var startRound = false
-    @State private var tee: Tee? = nil
-    @State var showingAlert: Bool = false
-    @State var roundScores: [Int] = []
-    @State var showingRoundSummary: Bool = false
-    @State private var query: String = ""
-    @State private var isLoading = false
-    @State private var isSearchPresented = false
     
     var body: some View {
+        @Bindable var bindableVM = vm
+        
         NavigationStack {
             Form {
                 Section(content: {
-                    NavigationLink(destination: {
-                        CourseDetailView(course: displayedCourse)
-                    }, label: {
+                    if let course = vm.displayedCourse {
+                        NavigationLink(destination: {
+                            CourseDetailView(course: course)
+                        }, label: {
+                            Text("Course details")
+                        })
+                    } else {
                         Text("Course details")
-                    })
+                            .foregroundStyle(.secondary)
+                    }
                     
-                    if let best = findLowestScore(scores: selectedCourseScores) {
+                    if let best = vm.findLowestScore(scores: selectedCourseScores) {
                         Text("Best score: \(best.score) - \(best.teeName)")
                     } else {
                         Text("Best score: N/A")
                     }
                     
                     Button("Add a previous score") {
-                        isShowingSheet = true
+                        vm.isShowingSheet = true
                     }
                 }, header: {
                     Text("Details")
                 })
                 
                 Section(content: {
-                    Picker("Select tee", selection: $tee) {
-                        if let maleTees = displayedCourse.tees.male {
+                    Picker("Select tee", selection: $bindableVM.tee) {
+                        if let maleTees = vm.displayedCourse?.tees.male {
                             Section(content: {
                                 ForEach(maleTees, id: \.id) { tee in
                                     Text(tee.teeName).tag(tee as Tee?)
@@ -59,7 +58,7 @@ struct PlayView: View {
                             })
                         }
                         
-                        if let femaleTees = displayedCourse.tees.female {
+                        if let femaleTees = vm.displayedCourse?.tees.female {
                             Section(content: {
                                 ForEach(femaleTees, id: \.id) { tee in
                                     Text(tee.teeName).tag(tee as Tee?)
@@ -78,10 +77,10 @@ struct PlayView: View {
                         Spacer()
                         
                         Button {
-                            if tee == nil {
-                                showingAlert = true
+                            if vm.tee == nil {
+                                vm.showingAlert = true
                             } else {
-                                startRound = true
+                                vm.startRound = true
                             }
                         } label: {
                             Text("Start Round")
@@ -100,63 +99,57 @@ struct PlayView: View {
                 }
                 .listRowBackground(Color.clear)
             }
-            .navigationTitle(displayedCourse.courseName)
-            .sheet(isPresented: $isShowingSheet, onDismiss: {
-                isShowingSheet = false
+            .navigationTitle(vm.displayedCourse?.courseName ?? "Loading…")
+            .sheet(isPresented: $bindableVM.isShowingSheet, onDismiss: {
+                vm.isShowingSheet = false
             }, content: {
-                AddScoreView(course: $displayedCourse, isShowing: $isShowingSheet)
+                if let course = vm.displayedCourse {
+                    AddScoreView(course: .constant(course), isShowing: $bindableVM.isShowingSheet)
+                }
             })
-            .navigationDestination(isPresented: $startRound) {
-                if let tee {
-                    RoundView(course: $displayedCourse, tee: Binding(get: { tee }, set: { self.tee = $0 }), roundScores: $roundScores, showingRoundSummary: $showingRoundSummary)
+            .navigationDestination(isPresented: $bindableVM.startRound) {
+                if let course = vm.displayedCourse, let tee = vm.tee {
+                    RoundView(course: .constant(course),
+                              tee: Binding(get: { tee }, set: { vm.tee = $0 }),
+                              roundScores: $bindableVM.roundScores,
+                              showingRoundSummary: $bindableVM.showingRoundSummary)
                 }
             }
-            .alert("No tee selected", isPresented: $showingAlert) {
+            .alert("No tee selected", isPresented: $bindableVM.showingAlert) {
                 Button("OK", role: .cancel) {}
             }
-            .sheet(isPresented: $showingRoundSummary, onDismiss: {
-                showingRoundSummary = false
+            .sheet(isPresented: $bindableVM.showingRoundSummary, onDismiss: {
+                vm.showingRoundSummary = false
             }, content: {
-                if let tee {
+                if let tee = vm.tee {
                     NavigationStack {
-                        RoundSummaryView(tee: Binding(get: { tee }, set: { self.tee = $0 }), scores: $roundScores, showingSheet: $showingRoundSummary)
+                        RoundSummaryView(tee: Binding(get: { tee }, set: { vm.tee = $0 }), scores: $bindableVM.roundScores, showingSheet: $bindableVM.showingRoundSummary)
                     }
                 }
             })
-            .searchable(text: $query, isPresented: $isSearchPresented, prompt: "Enter course or club name...")
+            .searchable(text: $bindableVM.query, isPresented: $bindableVM.isSearchPresented, prompt: "Enter course or club name...")
             .overlay(alignment: .center) {
-                if isSearchPresented {
-                    PlaySearchView(query: $query, isLoading: $isLoading, selectedCourse: $displayedCourse, isPresented: $isSearchPresented)
-                        .transition(.opacity)
+                if vm.isSearchPresented, let _ = vm.displayedCourse {
+                    PlaySearchView(
+                        query: $bindableVM.query,
+                        isLoading: $bindableVM.isLoading,
+                        selectedCourse: Binding(get: { vm.displayedCourse! }, set: { vm.displayedCourse = $0 }),
+                        isPresented: $bindableVM.isSearchPresented
+                    )
+                    .transition(.opacity)
                 }
             }
             .onAppear {
                 Task {
-                    if vm.scoresList.isEmpty {
-                        displayedCourse = await vm.fetchCourseWithID(id: 12578)
-                    } else {
-                        displayedCourse = await vm.fetchCourseWithID(id: vm.recentScores.first.course.courseId)
+                    if coursesVM.scoresList.isEmpty {
+                        vm.displayedCourse = await coursesVM.fetchCourseWithID(id: 12578)
+                    } else if let recent = coursesVM.recentScores.first?.course.courseId,
+                              let fetched = await coursesVM.fetchCourseWithID(id: recent) {
+                        vm.displayedCourse = fetched
                     }
                 }
             }
         }
-    }
-    
-    func findLowestScore(scores: [CourseIDScore]) -> CourseIDScore? {
-        let best = scores.min(by: { $0.score < $1.score })
-        return best
-    }
-    
-    func findScoresForSelectedCourse(id: Int) -> [CourseIDScore] {
-        var scores: [CourseIDScore] = []
-        
-        for score in vm.scoresList {
-            if score.courseId == id {
-                scores.append(score)
-            }
-        }
-        
-        return scores
     }
 }
 
