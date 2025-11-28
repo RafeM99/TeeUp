@@ -11,24 +11,26 @@ struct AddClubView: View {
     @Binding var clubs: [Club]
     @Binding var isShowing: Bool
     
+    @State private var vm = AddClubViewModel()
+    
     var body: some View {
         List {
-            TextField("Brand", text: $newBrand)
+            TextField("Brand", text: $vm.newBrand)
             
-            Picker("Club type", selection: $newType) {
+            Picker("Club type", selection: $vm.newType) {
                 ForEach(ClubType.allCases, id:\.self) { type in
                     Text("\(type.rawValue)")
                 }
             }
             
-            Toggle(isOn: $newIsLeft, label: {
+            Toggle(isOn: $vm.newIsLeft, label: {
                 Text("Left Handed")
             })
             
             VStack(alignment: .leading) {
-                Text("Distance: \(newDistance, specifier: "%.0f") yds")
+                Text("Distance: \(vm.newDistance, specifier: "%.0f") yds")
                 
-                Slider(value: $newDistance, in: 50...350, step: 5, label: {
+                Slider(value: $vm.newDistance, in: 50...350, step: 5, label: {
                     Text("Distance")
                 }, minimumValueLabel: {
                     Text("50 yds")
@@ -41,14 +43,7 @@ struct AddClubView: View {
                 Spacer()
                 
                 Button(action: {
-                    if newBrand == "" {
-                        showingAlert = true
-                    } else {
-                        let newClub = Club(type: newType, brand: newBrand, isLeftHanded: newIsLeft, distance: newDistance)
-                        clubs.append(newClub)
-                        clubs.sort(by: {$0.distance > $1.distance})
-                        isShowing = false
-                    }
+                    vm.addClub($clubs, $isShowing)
                 }, label: {
                     Text("Add Club")
                         .font(.title2)
@@ -59,7 +54,7 @@ struct AddClubView: View {
             .padding(8)
         }
         .presentationDetents([.fraction(0.5)])
-        .alert("No brand entered", isPresented: $showingAlert) {
+        .alert("No brand entered", isPresented: $vm.showingAlert) {
             Button("OK", role: .cancel) {}
         }
     }

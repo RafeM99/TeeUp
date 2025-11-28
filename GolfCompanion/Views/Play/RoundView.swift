@@ -9,28 +9,21 @@ import SwiftUI
 
 struct RoundView: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(CoursesViewModel.self) private var vm
+    @Environment(CoursesViewModel.self) private var coursesVm
     
     @Binding var course: Course
     @Binding var tee: Tee
     @Binding var roundScores: [Int]
     @Binding var showingRoundSummary: Bool
     
-    @State private var holeNumber: Int = 1
-    @State private var showingAlert: Bool = false
-    @State private var pendingScore: Int?
-    @State private var totalScore: Int = 0
-    @State private var showScorecard: Bool = false
-    @State private var showCaddy: Bool = false
-    @State var showingCaddyAlert: Bool = false
-    @State var recommendedClub: String = ""
+    @State private var vm = RoundViewModel()
     
     var body: some View {
         VStack(spacing: 0) {
             Form {
                 Section {
-                    Text("Distance: \(tee.holes[holeNumber - 1].yardage) yds")
-                    Text("Par: \(tee.holes[holeNumber - 1].par)")
+                    Text("Distance: \(tee.holes[vm.holeNumber - 1].yardage) yds")
+                    Text("Par: \(tee.holes[vm.holeNumber - 1].par)")
                 }
                 
                 Section {
@@ -38,7 +31,7 @@ struct RoundView: View {
                         Spacer()
                         
                         Button {
-                            showCaddy = true
+                            vm.showCaddy = true
                         } label: {
                             Text("Caddy")
                                 .font(.title)
@@ -66,8 +59,8 @@ struct RoundView: View {
                 
                 HStack {
                     Button(action: {
-                        pendingScore = 1
-                        showingAlert = true
+                        vm.pendingScore = 1
+                        vm.showingAlert = true
                     }, label: {
                         Image(systemName: "1.circle")
                             .resizable()
@@ -78,8 +71,8 @@ struct RoundView: View {
                     Spacer()
                     
                     Button(action: {
-                        pendingScore = 2
-                        showingAlert = true
+                        vm.pendingScore = 2
+                        vm.showingAlert = true
                     }, label: {
                         Image(systemName: "2.circle")
                             .resizable()
@@ -90,8 +83,8 @@ struct RoundView: View {
                     Spacer()
                     
                     Button(action: {
-                        pendingScore = 3
-                        showingAlert = true
+                        vm.pendingScore = 3
+                        vm.showingAlert = true
                     }, label: {
                         Image(systemName: "3.circle")
                             .resizable()
@@ -104,8 +97,8 @@ struct RoundView: View {
                 
                 HStack {
                     Button(action: {
-                        pendingScore = 4
-                        showingAlert = true
+                        vm.pendingScore = 4
+                        vm.showingAlert = true
                     }, label: {
                         Image(systemName: "4.circle")
                             .resizable()
@@ -116,8 +109,8 @@ struct RoundView: View {
                     Spacer()
                     
                     Button(action: {
-                        pendingScore = 5
-                        showingAlert = true
+                        vm.pendingScore = 5
+                        vm.showingAlert = true
                     }, label: {
                         Image(systemName: "5.circle")
                             .resizable()
@@ -128,8 +121,8 @@ struct RoundView: View {
                     Spacer()
                     
                     Button(action: {
-                        pendingScore = 6
-                        showingAlert = true
+                        vm.pendingScore = 6
+                        vm.showingAlert = true
                     }, label: {
                         Image(systemName: "6.circle")
                             .resizable()
@@ -142,8 +135,8 @@ struct RoundView: View {
                 
                 HStack {
                     Button(action: {
-                        pendingScore = 7
-                        showingAlert = true
+                        vm.pendingScore = 7
+                        vm.showingAlert = true
                     }, label: {
                         Image(systemName: "7.circle")
                             .resizable()
@@ -154,8 +147,8 @@ struct RoundView: View {
                     Spacer()
                     
                     Button(action: {
-                        pendingScore = 8
-                        showingAlert = true
+                        vm.pendingScore = 8
+                        vm.showingAlert = true
                     }, label: {
                         Image(systemName: "8.circle")
                             .resizable()
@@ -166,8 +159,8 @@ struct RoundView: View {
                     Spacer()
                     
                     Button(action: {
-                        pendingScore = 9
-                        showingAlert = true
+                        vm.pendingScore = 9
+                        vm.showingAlert = true
                     }, label: {
                         Image(systemName: "9.circle")
                             .resizable()
@@ -185,7 +178,7 @@ struct RoundView: View {
         .navigationBarBackButtonHidden()
         .toolbar {
             ToolbarItem(placement: .principal, content: {
-                Text("Hole \(holeNumber)")
+                Text("Hole \(vm.holeNumber)")
                     .font(.largeTitle)
                     .fontWeight(.bold)
             })
@@ -204,43 +197,43 @@ struct RoundView: View {
             
             ToolbarItem(placement: .topBarTrailing) {
                 Button(action: {
-                    showScorecard = true
+                    vm.showScorecard = true
                 }, label: {
                     Image(systemName: "list.dash")
                 })
             }
         }
-        .alert("Add score of \(pendingScore ?? 0)", isPresented: $showingAlert, presenting: pendingScore) { score in
+        .alert("Add score of \(vm.pendingScore ?? 0)", isPresented: $vm.showingAlert, presenting: vm.pendingScore) { score in
             Button("Add") {
                 roundScores.append(score)
-                totalScore += score
+                vm.totalScore += score
                 
-                if holeNumber >= tee.holes.count {
-                    pendingScore = nil
+                if vm.holeNumber >= tee.holes.count {
+                    vm.pendingScore = nil
                     
-                    vm.scoresList.append(CourseIDScore(score: totalScore, courseId: course.courseId, date: Date.now, teeName: tee.teeName))
+                    vm.scoresList.append(CourseIDScore(score: vm.totalScore, courseId: course.courseId, date: Date.now, teeName: tee.teeName))
                     
                     showingRoundSummary = true
                     dismiss()
                 } else {
-                    holeNumber += 1
-                    pendingScore = nil
+                    vm.holeNumber += 1
+                    vm.pendingScore = nil
                 }
             }
             
             Button("Cancel", role: .cancel) {
-                pendingScore = nil
+                vm.pendingScore = nil
             }
         } message: { score in
-            Text("Record \(score) for hole \(holeNumber)?")
+            Text("Record \(score) for hole \(vm.holeNumber)?")
         }
-        .navigationDestination(isPresented: $showScorecard) {
+        .navigationDestination(isPresented: $vm.showScorecard) {
             Scorecard_View(tee: $tee, scores: $roundScores)
         }
-        .sheet(isPresented: $showCaddy) {
-            CaddyView(clubToHit: $recommendedClub, showingAlert: $showingCaddyAlert)
+        .sheet(isPresented: $vm.showCaddy) {
+            CaddyView(clubToHit: $vm.recommendedClub, showingAlert: $showingCaddyAlert)
         }
-        .alert("Recommended club: \(recommendedClub)", isPresented: $showingCaddyAlert, presenting: recommendedClub) {_ in 
+        .alert("Recommended club: \(vm.recommendedClub)", isPresented: $showingCaddyAlert, presenting: vm.recommendedClub) {_ in
             Button("OK", role: .cancel) {}
         }
     }
