@@ -15,6 +15,7 @@ struct RoundView: View {
     @Binding var tee: Tee
     @Binding var roundScores: [Int]
     @Binding var showingRoundSummary: Bool
+    @Binding var showingRoundView: Bool
     
     @State private var vm = RoundViewModel()
     
@@ -205,20 +206,7 @@ struct RoundView: View {
         }
         .alert("Add score of \(vm.pendingScore ?? 0)", isPresented: $vm.showingAlert, presenting: vm.pendingScore) { score in
             Button("Add") {
-                roundScores.append(score)
-                vm.totalScore += score
-                
-                if vm.holeNumber >= tee.holes.count {
-                    vm.pendingScore = nil
-                    
-                    vm.scoresList.append(CourseIDScore(score: vm.totalScore, courseId: course.courseId, date: Date.now, teeName: tee.teeName))
-                    
-                    showingRoundSummary = true
-                    dismiss()
-                } else {
-                    vm.holeNumber += 1
-                    vm.pendingScore = nil
-                }
+                vm.addScore(coursesVm: coursesVm, score, $roundScores, $tee, $course, $showingRoundSummary, $showingRoundView)
             }
             
             Button("Cancel", role: .cancel) {
@@ -231,9 +219,9 @@ struct RoundView: View {
             Scorecard_View(tee: $tee, scores: $roundScores)
         }
         .sheet(isPresented: $vm.showCaddy) {
-            CaddyView(clubToHit: $vm.recommendedClub, showingAlert: $showingCaddyAlert)
+            CaddyView(clubToHit: $vm.recommendedClub, showingAlert: $vm.showingCaddyAlert)
         }
-        .alert("Recommended club: \(vm.recommendedClub)", isPresented: $showingCaddyAlert, presenting: vm.recommendedClub) {_ in
+        .alert("Recommended club: \(vm.recommendedClub)", isPresented: $vm.showingCaddyAlert, presenting: vm.recommendedClub) {_ in
             Button("OK", role: .cancel) {}
         }
     }

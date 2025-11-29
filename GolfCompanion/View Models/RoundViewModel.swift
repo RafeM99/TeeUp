@@ -6,9 +6,12 @@
 //
 
 import Foundation
+import SwiftUI
 
 @Observable
 class RoundViewModel {
+    private let coursesVm: CoursesViewModel
+    
     var holeNumber: Int = 1
     var showingAlert: Bool = false
     var pendingScore: Int?
@@ -17,4 +20,25 @@ class RoundViewModel {
     var showCaddy: Bool = false
     var showingCaddyAlert: Bool = false
     var recommendedClub: String = ""
+    
+    init(coursesVm: CoursesViewModel) {
+        self.coursesVm = coursesVm
+    }
+    
+    @MainActor func addScore(_ score: Int, _ roundScores: Binding<[Int]>, _ tee: Binding<Tee>, _ course: Binding<Course>, _ showingRoundSummary: Binding<Bool>, _ showingRoundView: Binding<Bool>) {
+        roundScores.wrappedValue.append(score)
+        self.totalScore += score
+        
+        if self.holeNumber >= tee.wrappedValue.holes.count {
+            self.pendingScore = nil
+            
+            coursesVm.scoresList.append(CourseIDScore(score: self.totalScore, courseId: course.wrappedValue.courseId, date: Date.now, teeName: tee.wrappedValue.teeName))
+            
+            showingRoundSummary.wrappedValue = true
+            showingRoundView.wrappedValue = false
+        } else {
+            self.holeNumber += 1
+            self.pendingScore = nil
+        }
+    }
 }
