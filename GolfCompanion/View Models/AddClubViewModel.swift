@@ -16,14 +16,16 @@ class AddClubViewModel {
     var newDistance: Double = 150
     var showingAlert: Bool = false
     
-    func addClub(_ clubs: Binding<[Club]>, _ isShowing: Binding<Bool>) {
+    func addClub(_ bag: Bag, _ isShowing: Binding<Bool>) {
         if newBrand == "" {
             showingAlert = true
             return
         } else {
             let newClub = Club(type: self.newType, brand: self.newBrand, isLeftHanded: self.newIsLeft, distance: self.newDistance)
-            clubs.wrappedValue.append(newClub)
-            clubs.wrappedValue.sort(by: {$0.distance > $1.distance})
+            bag.clubs.append(newClub)
+            bag.clubs.sort(by: {$0.distance > $1.distance})
+            
+            FileManager.default.saveBag(to: "bagFile", object: bag)
             isShowing.wrappedValue = false
         }
     }

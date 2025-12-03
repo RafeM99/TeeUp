@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct AddClubView: View {
-    @Binding var clubs: [Club]
+    @Environment(Bag.self) private var bag
+    
     @Binding var isShowing: Bool
     
     @State private var vm = AddClubViewModel()
@@ -43,7 +44,7 @@ struct AddClubView: View {
                 Spacer()
                 
                 Button(action: {
-                    vm.addClub($clubs, $isShowing)
+                    vm.addClub(bag, $isShowing)
                 }, label: {
                     Text("Add Club")
                         .font(.title2)

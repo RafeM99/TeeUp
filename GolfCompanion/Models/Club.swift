@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum ClubType: String, CaseIterable {
+enum ClubType: String, CaseIterable, Decodable, Encodable {
     case driver = "Driver"
     case threeWood = "3 Wood"
     case fiveWood = "5 Wood"
@@ -34,14 +34,15 @@ enum ClubType: String, CaseIterable {
 }
 
 @Observable
-class Club: Identifiable {
-    let id = UUID()
+class Club: Identifiable, Encodable, Decodable {
+    var id: UUID
     let type: ClubType
     var brand: String
     var isLeftHanded: Bool
     var distance: Double
     
     init(type: ClubType, brand: String, isLeftHanded: Bool, distance: Double) {
+        self.id = UUID()
         self.type = type
         self.brand = brand
         self.isLeftHanded = isLeftHanded

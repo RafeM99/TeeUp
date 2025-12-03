@@ -54,7 +54,7 @@ struct BagView: View {
                 vm.isShowingSheet = false
             }, content: {
                 @Bindable var bag = bag
-                AddClubView(clubs: $bag.clubs, isShowing: $vm.isShowingSheet)
+                AddClubView(isShowing: $vm.isShowingSheet)
             })
         }
     }

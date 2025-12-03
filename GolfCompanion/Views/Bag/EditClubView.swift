@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct EditClubView: View {
+    @Environment(Bag.self) private var bag
+    
     @Bindable var club: Club
     @Binding var isShowing: Bool
     
@@ -35,6 +37,7 @@ struct EditClubView: View {
                 Spacer()
                 
                 Button(action: {
+                    FileManager.default.saveBag(to: "bagFile", object: bag)
                     isShowing = false
                 }, label: {
                     Text("Done")

@@ -8,7 +8,7 @@
 import Foundation
 
 @Observable
-class Bag {
+class Bag: Encodable, Decodable {
     var clubs: [Club]
     
     static var examples: [Club] {
