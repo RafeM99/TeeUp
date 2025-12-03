@@ -12,14 +12,12 @@ struct GolfCompanionApp: App {
     @State private var bag = Bag(clubs: Bag.examples)
     @State private var coursesVM: CoursesViewModel
     @State private var playVM: PlayViewModel
-    @State private var roundVM: RoundViewModel
     @Environment(\.scenePhase) private var scenePhase
     
     init() {
         let courses = CoursesViewModel()
         _coursesVM = State(initialValue: courses)
         _playVM = State(initialValue: PlayViewModel(coursesVM: courses))
-        _roundVM = State(initialValue: RoundViewModel(coursesVm: courses))
     }
 
     var body: some Scene {
@@ -28,7 +26,6 @@ struct GolfCompanionApp: App {
                 .environment(bag)
                 .environment(coursesVM)
                 .environment(playVM)
-                .environment(roundVM)
         }
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {

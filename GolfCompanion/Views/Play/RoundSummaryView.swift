@@ -12,6 +12,8 @@ struct RoundSummaryView: View {
     @Binding var scores: [Int]
     @Binding var showingSheet: Bool
     
+    @State private var vm = RoundSummaryViewModel()
+    
     var totalScore: Int {
         scores.reduce(0, +)
     }
@@ -33,9 +35,9 @@ struct RoundSummaryView: View {
                         
                         Spacer()
                         
-                        Text(getParComparison(userTotal: totalScore, teeTotal: tee.parTotal))
+                        Text(vm.getParComparison(userTotal: totalScore, teeTotal: tee.parTotal))
                             .font(.system(size: 36, weight: .bold))
-                            .foregroundColor(parColour(userTotal: totalScore, teeTotal: tee.parTotal))
+                            .foregroundColor(vm.parColour(userTotal: totalScore, teeTotal: tee.parTotal))
                             .padding(12)
                             .background(
                                 RoundedRectangle(cornerRadius: 10)
@@ -67,29 +69,6 @@ struct RoundSummaryView: View {
                     }
                 }
             }
-        }
-    }
-    
-    func getParComparison(userTotal: Int, teeTotal: Int) -> String {
-        let parDifference = userTotal - teeTotal
-        
-        if parDifference == 0 {
-            return "E"
-        } else if parDifference > 0 {
-            return "+" + String(parDifference)
-        } else {
-            return String(parDifference)
-        }
-    }
-    
-    func parColour(userTotal: Int, teeTotal: Int) -> Color {
-        let diff = userTotal - teeTotal
-        if diff == 0 {
-            return .gray
-        } else if diff > 0 {
-            return .blue
-        } else {
-            return .red
         }
     }
 }

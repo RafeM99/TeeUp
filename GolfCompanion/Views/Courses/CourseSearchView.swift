@@ -8,21 +8,18 @@
 import SwiftUI
 
 struct CourseSearchView: View {
-    @Environment(CoursesViewModel.self) private var vm
+    @Environment(CoursesViewModel.self) private var coursesVm
     
     @Binding var query: String
     @Binding var isLoading: Bool
     
-    private let apiManager = CourseAPIManager()
-    @State var courses: [Course] = []
-    @State private var message: String? = nil
-    @State private var searchTask: Task<Void, Never>? = nil
+    @State private var vm = CourseSearchViewModel()
     
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
-                if !courses.isEmpty {
-                    List(courses) { course in
+                if !vm.courses.isEmpty {
+                    List(vm.courses) { course in
                         NavigationLink(destination: {
                             CourseDetailView(course: course)
                         }, label: {
@@ -35,7 +32,7 @@ struct CourseSearchView: View {
                             }
                         })
                     }
-                } else if !isLoading, let message = message {
+                } else if !isLoading, let message = vm.message {
                     // centered message when there are no results
                     VStack {
                         Spacer()
@@ -75,48 +72,22 @@ struct CourseSearchView: View {
             let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
             // if cleared, reset state and stop loading
             guard !trimmed.isEmpty else {
-                searchTask?.cancel()
+                vm.searchTask?.cancel()
                 isLoading = false
-                courses.removeAll()
-                message = nil
+                vm.courses.removeAll()
+                vm.message = nil
                 return
             }
             
             print("Query changed to:", query)
 
             // Cancel any in-flight debounce task
-            searchTask?.cancel()
+            vm.searchTask?.cancel()
 
             // Debounce: wait briefly before firing the search
-            searchTask = Task { @MainActor in
+            vm.searchTask = Task { @MainActor in
                 try? await Task.sleep(nanoseconds: 300_000_000) // 300ms
-                fetchCourses(query: trimmed)
-            }
-        }
-    }
-    
-    private func fetchCourses(query: String) {
-        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return }
-
-        isLoading = true
-        message = nil
-
-        apiManager.searchCourses(query: trimmed) { courses in
-            Task { @MainActor in
-                self.isLoading = false
-                
-                let updatedCourses = courses
-                for i in 0..<updatedCourses.count {
-                    if vm.favouritedIDs.contains(updatedCourses[i].courseId) {
-                        updatedCourses[i].isFavourite = true
-                    }
-                }
-                
-                self.courses = courses
-                if updatedCourses.isEmpty {
-                    self.message = "No results"
-                }
+                vm.fetchCourses(query: trimmed, $isLoading, coursesVm)
             }
         }
     }

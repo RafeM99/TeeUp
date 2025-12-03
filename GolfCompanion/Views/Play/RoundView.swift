@@ -206,7 +206,7 @@ struct RoundView: View {
         }
         .alert("Add score of \(vm.pendingScore ?? 0)", isPresented: $vm.showingAlert, presenting: vm.pendingScore) { score in
             Button("Add") {
-                vm.addScore(coursesVm: coursesVm, score, $roundScores, $tee, $course, $showingRoundSummary, $showingRoundView)
+                vm.addScore(coursesVm, score, $roundScores, $tee, $course, $showingRoundSummary, $showingRoundView)
             }
             
             Button("Cancel", role: .cancel) {

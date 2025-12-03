@@ -113,7 +113,7 @@ struct PlayView: View {
                               tee: Binding(get: { tee }, set: { vm.tee = $0 }),
                               roundScores: $bindableVM.roundScores,
                               showingRoundSummary: $bindableVM.showingRoundSummary,
-                              showingRoundView: $bindableVM.startRound),
+                              showingRoundView: $bindableVM.startRound)
                 }
             }
             .alert("No tee selected", isPresented: $bindableVM.showingAlert) {
