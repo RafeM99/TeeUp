@@ -55,7 +55,7 @@ class PlaySearchViewModel {
 
                     isLoading.wrappedValue = false
 
-                    var updatedCourses = results
+                    let updatedCourses = results
                     for i in 0..<updatedCourses.count {
                         if coursesVm.favouritedIDs.contains(updatedCourses[i].courseId) {
                             updatedCourses[i].isFavourite = true

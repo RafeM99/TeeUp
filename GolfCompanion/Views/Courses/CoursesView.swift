@@ -22,6 +22,20 @@ struct CoursesView: View {
         NavigationStack {
             Form {
                 Section(content: {
+                    NavigationStack {
+                        ForEach(vm.favouritedIDs, id: \.self) { id in
+                            NavigationLink(destination: {
+                                try CourseDetailView(course: vm.fetchCourseWithID(id: id))
+                            }, label: {
+                                Text("\(vm.fetchCourseWithID(id: id).courseName)")
+                            })
+                        }
+                    }
+                }, header: {
+                    Text("Favourited Courses")
+                })
+                
+                Section(content: {
                     List(vm.recentScores) { score in
                         NavigationLink(destination: {
                             CourseDetailView(course: score.course)
@@ -46,7 +60,12 @@ struct CoursesView: View {
                                     .foregroundColor(.blue)
                                     .symbolEffect(.bounce, value: score.course.isFavourite)
                                 
-                                Text("\(score.course.courseName)")
+                                VStack(alignment: .leading) {
+                                    Text("\(score.course.courseName)")
+                                    Text("\(score.teeName)")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
                                 
                                 Spacer()
                                 

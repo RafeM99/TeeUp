@@ -18,7 +18,9 @@ struct BagView: View {
             VStack(spacing: 0) {
                 if bag.clubs.isEmpty {
                     Text("No clubs currently in bag")
+                        .foregroundStyle(.secondary)
                     Text("Click the + in the top right corner to add a club")
+                        .foregroundStyle(.secondary)
                 } else {
                     List(bag.clubs, id: \.id) { club in
                         NavigationLink(destination: {
