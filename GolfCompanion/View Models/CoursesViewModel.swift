@@ -20,12 +20,12 @@ class CoursesViewModel {
     var isLoading = false
     var nearestCourses: [Course] = []
     var sortedPairedResults: [(RecommendedNearbyCourse, Course)] = []
-    var scoresList: [CourseIDScore] = [/*CourseIDScore(score: 75, courseId: 12605, date: Calendar.current.date(from: DateComponents(year: 2024, month: 12, day: 2))!, teeName: "Yellow"), CourseIDScore(score: 80, courseId: 24636, date: Calendar.current.date(from: DateComponents(year: 2023, month: 9, day: 15))!, teeName: "White"), CourseIDScore(score: 80, courseId: 24636, date: Calendar.current.date(from: DateComponents(year: 2023, month: 9, day: 15))!, teeName: "White"), CourseIDScore(score: 80, courseId: 24636, date: Calendar.current.date(from: DateComponents(year: 2023, month: 9, day: 15))!, teeName: "White"), CourseIDScore(score: 80, courseId: 24636, date: Calendar.current.date(from: DateComponents(year: 2023, month: 9, day: 15))!, teeName: "White"), CourseIDScore(score: 80, courseId: 24636, date: Calendar.current.date(from: DateComponents(year: 2023, month: 9, day: 15))!, teeName: "White")*/]
+    var scoresList: [CourseIDScore] = FileManager.default.load(from: "scoresListFile") ?? []
     var isLoadingID = false
     var messageID: String? = nil
     var recentScores: [CourseScore] = []
     let calendar = Calendar.current
-    var favouritedIDs: [Int] = [12605]
+    var favouritedIDs: [Int] = FileManager.default.load(from: "favouritedIDsFile") ?? []
     
     func updateLocation() {
         locationDataManager.requestLocation { [weak self] coordinate in

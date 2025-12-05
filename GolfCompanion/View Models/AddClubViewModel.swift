@@ -25,7 +25,7 @@ class AddClubViewModel {
             bag.clubs.append(newClub)
             bag.clubs.sort(by: {$0.distance > $1.distance})
             
-            FileManager.default.saveBag(to: "bagFile", object: bag)
+            FileManager.default.save(to: "bagFile", object: bag)
             isShowing.wrappedValue = false
         }
     }

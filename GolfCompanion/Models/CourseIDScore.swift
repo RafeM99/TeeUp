@@ -7,8 +7,8 @@
 
 import Foundation
 
-struct CourseIDScore: Identifiable {
-    let id = UUID()
+struct CourseIDScore: Identifiable, Decodable, Encodable {
+    var id = UUID()
     let score: Int
     let courseId: Int
     let date: Date

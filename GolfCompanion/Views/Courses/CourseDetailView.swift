@@ -96,8 +96,10 @@ struct CourseDetailView: View {
                         
                         if course.isFavourite == true {
                             vm.favouritedIDs.append(course.courseId)
+                            FileManager.default.save(to: "favouritedIDsFile", object: vm.favouritedIDs)
                         } else {
                             vm.favouritedIDs.removeAll { $0 == course.courseId }
+                            FileManager.default.save(to: "favouritedIDsFile", object: vm.favouritedIDs)
                         }
                     }, label: {
                         Image(systemName: course.isFavourite ? "star.fill" : "star")

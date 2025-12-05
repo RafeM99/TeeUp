@@ -67,6 +67,8 @@ struct AddScoreView: View {
                     guard let tee = newTee else { return }
                     let newScore = CourseIDScore(score: Int(newScore), courseId: course.courseId, date: newDate, teeName: tee.teeName)
                     vm.scoresList.append(newScore)
+                    
+                    FileManager.default.save(to: "scoresListFile", object: vm.scoresList)
                     isShowing = false
                 }, label: {
                     Text("Add Score")

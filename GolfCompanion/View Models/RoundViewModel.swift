@@ -28,6 +28,8 @@ class RoundViewModel {
             
             coursesVm.scoresList.append(CourseIDScore(score: self.totalScore, courseId: course.wrappedValue.courseId, date: Date.now, teeName: tee.wrappedValue.teeName))
             
+            FileManager.default.save(to: "scoresListFile", object: coursesVm.scoresList)
+            
             showingRoundSummary.wrappedValue = true
             showingRoundView.wrappedValue = false
         } else {

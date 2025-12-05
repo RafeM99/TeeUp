@@ -13,14 +13,12 @@ extension FileManager {
         return paths[0]
     }
     
-    func saveBag(to filePath: String, object: Bag) {
-        //encode to JSON
+    func save<T: Codable>(to filePath: String, object: T) {
         let encoder = JSONEncoder()
         if let encoded = try? encoder.encode(object) {
             if let json = String(data: encoded, encoding: .utf8) {
-                //get path to file to save to in user document directory
+                //do file handling to save this json
                 let url = getDocumentDirectory().appendingPathComponent(filePath)
-                //write json to file
                 do {
                     try json.write(to: url, atomically: true, encoding: .utf8)
                 } catch {
@@ -29,22 +27,19 @@ extension FileManager {
             }
         }
     }
-    
-    func loadBag(from filePath: String) -> Bag? {
-        //get path to file
-        let url = getDocumentDirectory().appendingPathComponent(filePath)
-        //read from file
+        
+    func load<T: Codable>(from filepath: String) -> T? {
+        let url = getDocumentDirectory().appendingPathComponent(filepath)
         if let data = try? Data(contentsOf: url) {
-            //decode from JSON into Bag
             let decoder = JSONDecoder()
-            if let bag = try? decoder.decode(Bag.self, from: data) {
-                return bag
+            if let loaded = try? decoder.decode(T.self, from: data) {
+                return loaded
             } else {
-                print("Failed to decode from JSON")
+                print("Failed to decode")
                 return nil
             }
         } else {
-            print("Couldn't read from file at given path")
+            print("Couldn't find file at given path")
             return nil
         }
     }

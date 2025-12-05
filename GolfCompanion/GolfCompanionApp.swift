@@ -9,7 +9,7 @@ import SwiftUI
 
 @main
 struct GolfCompanionApp: App {
-    @State private var bag = FileManager.default.loadBag(from: "bagFile") ?? Bag(clubs: [])
+    @State private var bag = FileManager.default.load(from: "bagFile") ?? Bag(clubs: [])
     @State private var coursesVM: CoursesViewModel
     @State private var playVM: PlayViewModel
     @Environment(\.scenePhase) private var scenePhase

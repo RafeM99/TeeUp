@@ -14,6 +14,6 @@ class BagViewModel {
     func deleteClub(_ club: Club, from bag: Bag) {
         bag.clubs.removeAll{$0.id == club.id}
         bag.clubs.sort{$0.distance > $1.distance}
-        FileManager.default.saveBag(to: "bagFile", object: bag)
+        FileManager.default.save(to: "bagFile", object: bag)
     }
 }

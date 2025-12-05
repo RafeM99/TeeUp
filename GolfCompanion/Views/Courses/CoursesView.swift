@@ -34,8 +34,10 @@ struct CoursesView: View {
 
                                             if score.course.isFavourite == true {
                                                 vm.favouritedIDs.append(score.course.courseId)
+                                                FileManager.default.save(to: "favouritedIDsFile", object: vm.favouritedIDs)
                                             } else {
                                                 vm.favouritedIDs.removeAll { $0 == score.course.courseId }
+                                                FileManager.default.save(to: "favouritedIDsFile", object: vm.favouritedIDs)
                                             }
 
                                             vm.recentScores.sort { $0.course.isFavourite && !$1.course.isFavourite }

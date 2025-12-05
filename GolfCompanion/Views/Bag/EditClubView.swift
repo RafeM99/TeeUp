@@ -16,9 +16,15 @@ struct EditClubView: View {
     var body: some View {
         List {
             TextField("Brand", text: $club.brand)
+                .onChange(of: club.brand, {
+                    FileManager.default.save(to: "bagFile", object: bag)
+                })
             
             Toggle(isOn: $club.isLeftHanded, label: {
                 Text("Left Handed")
+            })
+            .onChange(of: club.isLeftHanded, {
+                FileManager.default.save(to: "bagFile", object: bag)
             })
             
             VStack(alignment: .leading) {
@@ -31,13 +37,16 @@ struct EditClubView: View {
                 }, maximumValueLabel: {
                     Text("350 yds")
                 })
+                .onChange(of: club.distance, {
+                    FileManager.default.save(to: "bagFile", object: bag)
+                })
             }
             
             HStack{
                 Spacer()
                 
                 Button(action: {
-                    FileManager.default.saveBag(to: "bagFile", object: bag)
+                    FileManager.default.save(to: "bagFile", object: bag)
                     isShowing = false
                 }, label: {
                     Text("Done")
