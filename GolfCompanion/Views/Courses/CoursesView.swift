@@ -23,11 +23,11 @@ struct CoursesView: View {
             Form {
                 Section(content: {
                     NavigationStack {
-                        ForEach(vm.favouritedIDs, id: \.self) { id in
+                        ForEach(vm.favouritedCourses) { course in
                             NavigationLink(destination: {
-                                try CourseDetailView(course: vm.fetchCourseWithID(id: id))
+                                CourseDetailView(course: course)
                             }, label: {
-                                Text("\(vm.fetchCourseWithID(id: id).courseName)")
+                                Text("\(course.courseName)")
                             })
                         }
                     }

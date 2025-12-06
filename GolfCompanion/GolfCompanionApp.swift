@@ -37,6 +37,13 @@ struct GolfCompanionApp: App {
                             playVM.displayedCourse = fetched
                     }
                     
+                    coursesVM.favouritedCourses.removeAll()
+                    for id in coursesVM.favouritedIDs {
+                        if let favouriteCourse = await coursesVM.fetchCourseWithID(id: id) {
+                            coursesVM.favouritedCourses.append(favouriteCourse)
+                        }
+                    }
+                    
                     coursesVM.recentScores.removeAll()
                     for score in coursesVM.scoresList {
                         if let course = await coursesVM.fetchCourseWithID(id: score.courseId) {

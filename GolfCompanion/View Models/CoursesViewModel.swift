@@ -26,6 +26,7 @@ class CoursesViewModel {
     var recentScores: [CourseScore] = []
     let calendar = Calendar.current
     var favouritedIDs: [Int] = FileManager.default.load(from: "favouritedIDsFile") ?? []
+    var favouritedCourses: [Course] = []
     
     func updateLocation() {
         locationDataManager.requestLocation { [weak self] coordinate in
