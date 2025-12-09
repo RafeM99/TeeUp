@@ -22,14 +22,12 @@ struct CoursesView: View {
         NavigationStack {
             Form {
                 Section(content: {
-                    NavigationStack {
-                        ForEach(vm.favouritedCourses) { course in
-                            NavigationLink(destination: {
-                                CourseDetailView(course: course)
-                            }, label: {
-                                Text("\(course.courseName)")
-                            })
-                        }
+                    ForEach(vm.favouritedCourses) { course in
+                        NavigationLink(destination: {
+                            CourseDetailView(course: course)
+                        }, label: {
+                            Text("\(course.courseName)")
+                        })
                     }
                 }, header: {
                     Text("Favourited Courses")
