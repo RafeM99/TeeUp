@@ -90,7 +90,3 @@ struct AddScoreView: View {
         }
     }
 }
-
-//#Preview {
-//    AddScoreView()
-//}

@@ -21,6 +21,7 @@ struct CoursesView: View {
         
         NavigationStack {
             Form {
+                // favourited courses
                 Section(content: {
                     ForEach(vm.favouritedCourses) { course in
                         NavigationLink(destination: {
@@ -33,6 +34,7 @@ struct CoursesView: View {
                     Text("Favourited Courses")
                 })
                 
+                // recent rounds
                 Section(content: {
                     List(vm.recentScores) { score in
                         NavigationLink(destination: {
@@ -83,6 +85,7 @@ struct CoursesView: View {
                     Text("Recent rounds")
                 })
                 
+                // recommended courses
                 Section(content: {
                     if vm.isLoading {
                         ProgressView("Finding nearby courses…")

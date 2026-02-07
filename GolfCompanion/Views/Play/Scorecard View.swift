@@ -18,14 +18,14 @@ struct Scorecard_View: View {
         let back = Array(holes.dropFirst(frontCount))
         let hasBack = !back.isEmpty
         
-        // Helpers to sum attributes
+        // functions to sum attributes
         func sumPar(_ hs: [Hole]) -> Int {
             hs.reduce(0) { $0 + $1.par }
         }
         func sumYardage(_ hs: [Hole]) -> Int {
             hs.reduce(0) { $0 + $1.yardage }
         }
-        // Sum scores for a given index range. Returns nil if there are no scores in that range yet.
+        // add scores for a given index range. Returns nil if there are no scores in that range yet.
         func sumScores(range: Range<Int>) -> Int? {
             guard !scores.isEmpty else { return nil }
             var total = 0
@@ -331,11 +331,3 @@ struct Scorecard_View: View {
         }
     }
 }
-
-//#Preview {
-//    if let sampleTee = Course.courseExamples.first?.tees.male.first {
-//        Scorecard_View(tee: .constant(sampleTee), scores: .constant(Array(repeating: 4, count: 18)))
-//    } else {
-//        Text("No sample tee available")
-//    }
-//}

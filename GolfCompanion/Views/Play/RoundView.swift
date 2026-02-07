@@ -22,11 +22,13 @@ struct RoundView: View {
     var body: some View {
         VStack(spacing: 0) {
             Form {
+                // hole details
                 Section {
                     Text("Distance: \(tee.holes[vm.holeNumber - 1].yardage) yds")
                     Text("Par: \(tee.holes[vm.holeNumber - 1].par)")
                 }
                 
+                // caddy button
                 Section {
                     HStack {
                         Spacer()
@@ -51,6 +53,7 @@ struct RoundView: View {
                 .listRowBackground(Color.clear)
             }
             
+            // score buttons
             VStack(alignment: .leading) {
                 Text("Score")
                     .font(.title2)
@@ -226,7 +229,3 @@ struct RoundView: View {
         }
     }
 }
-
-//#Preview {
-//    RoundView()
-//}

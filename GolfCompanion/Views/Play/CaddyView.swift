@@ -53,8 +53,3 @@ struct CaddyView: View {
         .presentationDetents([.fraction(0.3)])
     }
 }
-
-//#Preview {
-//    CaddyView()
-//        .environment(Bag(clubs: Bag.examples))
-//}

@@ -60,7 +60,3 @@ struct AddClubView: View {
         }
     }
 }
-
-//#Preview {
-//    AddClubView()
-//}

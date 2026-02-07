@@ -16,6 +16,7 @@ class AddClubViewModel {
     var newDistance: Double = 150
     var showingAlert: Bool = false
     
+    // add a new club to the bag
     func addClub(_ bag: Bag, _ isShowing: Binding<Bool>) {
         if newBrand == "" {
             showingAlert = true

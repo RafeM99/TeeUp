@@ -14,6 +14,7 @@ class CaddyViewModel {
     var lie: Lies = .fairway
     var lieConstant: Double = 1.0
     
+    // caddy function to recommend a club to hit given a distance and lie
     func getRecommendedClub(_ bag: Bag, _ clubToHit: Binding<String>, _ showingAlert: Binding<Bool>) {
         if lie == .fairway {
             lieConstant = 1.0

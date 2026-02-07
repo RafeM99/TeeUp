@@ -81,10 +81,10 @@ struct CourseSearchView: View {
             
             print("Query changed to:", query)
 
-            // Cancel any in-flight debounce task
+            // cancel any ongoing task
             vm.searchTask?.cancel()
 
-            // Debounce: wait briefly before firing the search
+            // wait briefly before firing the search
             vm.searchTask = Task { @MainActor in
                 try? await Task.sleep(nanoseconds: 300_000_000) // 300ms
                 vm.fetchCourses(query: trimmed, $isLoading, coursesVm)

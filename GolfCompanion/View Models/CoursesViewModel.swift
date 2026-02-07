@@ -28,6 +28,7 @@ class CoursesViewModel {
     var favouritedIDs: [Int] = FileManager.default.load(from: "favouritedIDsFile") ?? []
     var favouritedCourses: [Course] = []
     
+    // update device location
     func updateLocation() {
         locationDataManager.requestLocation { [weak self] coordinate in
             guard let self else { return }
@@ -38,7 +39,7 @@ class CoursesViewModel {
         }
     }
     
-    // Calculates distance between two coordinates in km
+    // calculates distance between two coordinates in km
     func calculateDistance(courseLat: Double, courseLon: Double, userLat: Double, userLon: Double) -> Double {
         let course = CLLocation(latitude: courseLat, longitude: courseLon)
         let user = CLLocation(latitude: userLat, longitude: userLon)
@@ -65,6 +66,7 @@ class CoursesViewModel {
         return courses
     }
     
+    // gets list of nearby course names from MapKit
     func fetchNearbyCoursesWithMapKit(userLocation: (Double, Double)) {
         let searchSpan = MKCoordinateSpan(latitudeDelta: 0.15, longitudeDelta: 0.15)
         let userCenter = CLLocationCoordinate2D(latitude: userLocation.0, longitude: userLocation.1)
@@ -324,6 +326,7 @@ class CoursesViewModel {
         self.message = self.nearestCourses.isEmpty ? "No nearby courses found" : nil
     }
     
+    // puts string (course names) into a normalised form so the course is easier to identify in the API
     func normalise(_ name: String) -> String {
         // Base lowercase + diacritics folding
         let original = name.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -355,6 +358,7 @@ class CoursesViewModel {
         return s
     }
     
+    // fetch course data given its id
     func fetchCourseWithID(id: Int) async -> Course? {
         let apiManager = CourseAPIManager()
         guard id != 0 else { return nil }
@@ -384,6 +388,7 @@ class CoursesViewModel {
         }
     }
     
+    // calculate time since round was palyed
     func getTimeSinceRound(date: Date) -> String {
         let dayInterval = calendar.dateComponents([.day], from: date, to: Date.now).day ?? 0
         var intervalString = ""

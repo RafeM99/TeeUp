@@ -48,6 +48,7 @@ struct CourseDetailView: View {
                     Text("Previous rounds")
                 })
                 
+                // display all male tees
                 if let maleTees = course.tees.male, !maleTees.isEmpty {
                     Section(content: {
                         ForEach(maleTees, id: \.id) { tee in
@@ -68,6 +69,7 @@ struct CourseDetailView: View {
                     })
                 }
                 
+                // display all female tees
                 if let femaleTees = course.tees.female, !femaleTees.isEmpty {
                     Section(content: {
                         ForEach(femaleTees, id: \.id) { tee in
@@ -90,6 +92,7 @@ struct CourseDetailView: View {
             }
             .navigationTitle("\(course.courseName)")
             .toolbar {
+                // favourite icon
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: {
                         course.isFavourite.toggle()

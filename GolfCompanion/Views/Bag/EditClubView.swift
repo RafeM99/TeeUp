@@ -60,7 +60,3 @@ struct EditClubView: View {
         .presentationDetents([.fraction(0.4)])
     }
 }
-
-//#Preview {
-//    EditClubView()
-//}

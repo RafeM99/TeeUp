@@ -16,6 +16,7 @@ class CourseSearchViewModel {
     var searchTask: Task<Void, Never>? = nil
     private var lastQueryID: Int = 0
     
+    // fetch course results from query given by user
     func fetchCourses(query: String, _ isLoading: Binding<Bool>, _ coursesVm: CoursesViewModel) {
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
         

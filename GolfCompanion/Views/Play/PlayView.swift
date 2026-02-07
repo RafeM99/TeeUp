@@ -21,6 +21,7 @@ struct PlayView: View {
         
         NavigationStack {
             Form {
+                // course details
                 Section(content: {
                     if let course = vm.displayedCourse {
                         NavigationLink(destination: {
@@ -46,6 +47,7 @@ struct PlayView: View {
                     Text("Details")
                 })
                 
+                // tee picker
                 Section(content: {
                     Picker("Select tee", selection: $bindableVM.tee) {
                         if let maleTees = vm.displayedCourse?.tees.male {
@@ -72,6 +74,7 @@ struct PlayView: View {
                     Text("Play")
                 })
                 
+                // start round button
                 Section {
                     HStack {
                         Spacer()

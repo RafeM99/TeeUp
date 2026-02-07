@@ -10,6 +10,7 @@ import SwiftUI
 
 @Observable
 class RoundSummaryViewModel {
+    // gets number over/under par (e.g. +5, E, -5)
     func getParComparison(userTotal: Int, teeTotal: Int) -> String {
         let parDifference = userTotal - teeTotal
         
@@ -22,6 +23,7 @@ class RoundSummaryViewModel {
         }
     }
     
+    // gets colour to display par comparison
     func parColour(userTotal: Int, teeTotal: Int) -> Color {
         let diff = userTotal - teeTotal
         if diff == 0 {
