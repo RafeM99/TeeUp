@@ -30,6 +30,7 @@ struct GolfCompanionApp: App {
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
                 Task { @MainActor in
+                    // fetch favourite courses
                     coursesVM.favouritedCourses.removeAll()
                     for id in coursesVM.favouritedIDs {
                         if let favouriteCourse = await coursesVM.fetchCourseWithID(id: id) {
@@ -37,6 +38,7 @@ struct GolfCompanionApp: App {
                         }
                     }
                     
+                    // fetch recent scores
                     coursesVM.recentScores.removeAll()
                     for score in coursesVM.scoresList {
                         if let course = await coursesVM.fetchCourseWithID(id: score.courseId) {
@@ -47,6 +49,7 @@ struct GolfCompanionApp: App {
                     }
                     coursesVM.filterRecentScores()
                     
+                    // fetch displayed course in PlayView
                     if coursesVM.scoresList.isEmpty {
                         playVM.displayedCourse = await coursesVM.fetchCourseWithID(id: 12578)
                     } else if let recent = coursesVM.recentScores.first?.course.courseId,
@@ -54,6 +57,7 @@ struct GolfCompanionApp: App {
                             playVM.displayedCourse = fetched
                     }
                     
+                    // update location of device
                     coursesVM.updateLocation()
                 }
             }
