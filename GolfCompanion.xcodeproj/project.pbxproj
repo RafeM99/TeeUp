@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		07B8B7BD307AA6C500C1F57C /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 07B8B7BC307AA6B300C1F57C /* .gitignore */; };
 		3D4256802E7460D300C7BC0C /* GolfCompanion.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = 3D42567F2E7460D300C7BC0C /* GolfCompanion.xctestplan */; };
 /* End PBXBuildFile section */
 
@@ -31,6 +32,7 @@
 		076F5B5B2E1BE9AB003839A0 /* GolfCompanion.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GolfCompanion.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		076F5B682E1BE9AD003839A0 /* GolfCompanionTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GolfCompanionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		076F5B722E1BE9AD003839A0 /* GolfCompanionUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GolfCompanionUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		07B8B7BC307AA6B300C1F57C /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		3D42567F2E7460D300C7BC0C /* GolfCompanion.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = GolfCompanion.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -80,6 +82,7 @@
 		076F5B522E1BE9AB003839A0 = {
 			isa = PBXGroup;
 			children = (
+				07B8B7BC307AA6B300C1F57C /* .gitignore */,
 				3D42567F2E7460D300C7BC0C /* GolfCompanion.xctestplan */,
 				076F5B5D2E1BE9AB003839A0 /* GolfCompanion */,
 				076F5B6B2E1BE9AD003839A0 /* GolfCompanionTests */,
@@ -218,6 +221,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				07B8B7BD307AA6C500C1F57C /* .gitignore in Resources */,
 				3D4256802E7460D300C7BC0C /* GolfCompanion.xctestplan in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

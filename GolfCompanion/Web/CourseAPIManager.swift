@@ -35,7 +35,7 @@ class CourseAPIManager {
         // formulate a request for the api
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-        request.addValue("Key 2NBEUHWTKI6HHVT6SDSQTZKR24", forHTTPHeaderField: "Authorization")
+        request.addValue("Key \(Secrets.apiKey)", forHTTPHeaderField: "Authorization")
         
         // log masked Authorization header
         if let auth = request.value(forHTTPHeaderField: "Authorization") {
